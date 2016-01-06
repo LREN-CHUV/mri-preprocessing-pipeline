@@ -1,0 +1,5 @@
+InputFolder = 'M:\CRN\LREN\SHARE\VBQ_Output_All\DataNifti_All';
+MPMDataFolder = 'M:\CRN\LREN\SHARE\VBQ_Output_All\MPMs_All'; 
+MPRAGEFolder = 'M:\CRN\LREN\SHARE\VBQ_Output_All\DataNifti_All';
+ProtocolsFile = 'D:\Users DATA\Users\lester\Automatic_Computation\Protocols_definition.txt';
+OutputFolder = 'D:\Users DATA\Users\lester\ZZZ_Diffusion_Output';

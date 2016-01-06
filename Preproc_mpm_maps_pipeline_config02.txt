@@ -1,0 +1,7 @@
+DataFolderName= 'K:\Users\bdragans\back_up\mtr_fil\cohorts\All\';
+ProtocolsFile = 'D:\Users DATA\Users\lester\Automatic_Computation\Protocols_definition.txt';
+MPM_OutputFolder = 'D:\Users DATA\Users\lester\Sara_Data_again\MPMs\';
+GlobalMPMFolder = 'D:\Users DATA\Users\lester\Sara_Data_again\GlobalMPMs\';
+MPM_Template = 'nwTPM_SL.nii';
+ServerFolder = 'M:\CRN\LREN\SHARE\VBQ_Output_Sara_Data_again\';
+doUNICORT = true;

@@ -1,0 +1,7 @@
+DataFolderName= 'M:\CRN\LREN\SHARE\4Renaud_duplicate_MPMprotocols\';
+ProtocolsFile = 'D:\Users DATA\Users\lester\Automatic_Computation\Protocols_definition.txt';
+MPM_OutputFolder = 'D:\Users DATA\Users\lester\ZZZ_Renaud\MPMs_All\';
+GlobalMPMFolder = 'D:\Users DATA\Users\lester\ZZZ_Renaud\GlobalMPMs_All\';
+MPM_Template = 'nwTPM_sl2.nii';
+ServerFolder = 'D:\Users DATA\Users\lester\ZZZ_Renaud\Server\';
+doUNICORT = false;

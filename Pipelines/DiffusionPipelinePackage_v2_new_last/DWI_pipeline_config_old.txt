@@ -1,0 +1,3 @@
+InputFolder = 'M:\CRN\LREN\SHARE\VBQ_Output\DataNifti_New';
+ProtocolsFile = 'Protocols_definition.txt';
+OutputFolder = 'D:\PipelineTesting\Test';

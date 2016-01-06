@@ -1,0 +1,5 @@
+DataFolder ='K:\IRMMP16\prisma\2014';
+OutputFolder = 'D:\Users DATA\Users\lester\VBQ_Dicom_Data_All';
+CheckTime =     60;
+StartDate = '02.06.2013';
+ProtocolsFile='D:\Users DATA\Users\lester\Automatic_Computation\Protocols_definition.txt';
