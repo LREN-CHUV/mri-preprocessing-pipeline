@@ -24,6 +24,7 @@ if ~exist(Input_DWI,'file')
     Input_DWI=fullfile(PathName,FileName);
 end
 [pathstr,name,ext] = fileparts(Input_DWI);
+HARDI_path = pathstr;
 
 % Brain mask
 if ~exist(Input_DWI_mask,'file')
@@ -47,6 +48,7 @@ elseif ~isempty(strfind(Anatomical_Image, '_MT')) && isempty(strfind(Anatomical_
     Anatomical_Image = ScaleData(Anatomical_Image,1000);
     disp('Using an MT template scaled by x1000')
     disp('------------------------------------')
+    copyfile(Anatomical_Image,mrtrixParams.qMRIpath)
 end
 
 %% I. dwi2response
@@ -123,7 +125,7 @@ end
 %% V. SIFT
 % Dense tractograms can be filtered using the SIFT algorithm.
 
-if mrtrixParams.doSIFT ==1
+if mrtrixParams.doSIFT ==1 || mrtrixParams.doSIFT2
     Input_tck = Output_tck;
     [Output_tck, mrtrixParams] = tcksift(Input_tck, Input_FOD, '', mrtrixParams);
 end
@@ -148,10 +150,29 @@ else
 end
 
 %% VII. Connectome mapping
-% *** This section will use freesurfer segmentations to map the connectome ***
+% This section uses freesurfer segmentations to map the connectome.
 
-% connectome_map(Anatomical_Image,mrtrixParams)
+connectome_dir = [HARDI_path filesep 'connectome'];
+if ~exist(connectome_dir,'dir');
+    mkdir(connectome_dir);
+end
 
+CC = strsplit(name,'.');
+connectome_output = [connectome_dir filesep CC{1} '_connectome'];
+
+mrtrixParams = connectome_map(Input_tck, connectome_output, Anatomical_Image, mrtrixParams);
+
+if ~mrtrixParams.commandsOnly==true
+    disp('--------------------------')
+    disp('tck2connectome has completed')
+    disp(['Connectome matrices saved to: ' connectome_dir])
+else
+    disp('--------------------------')
+    disp('tck2connectome commands have been calculated')
+end
+
+disp('--------------------------')
+disp('------------------------------------')
 
 %% B. Save computed mrtrix commands as a .sh file for running on HPC clusters
 
@@ -160,11 +181,13 @@ if isempty(mrtrixParams.SubjectName)
 else SubPrefix = [mrtrixParams.SubjectName '_'];
 end
 
-commandspath = [pathstr filesep SubPrefix 'mrtrix_commands.sh'];
+% commandspath = [pathstr filesep SubPrefix 'mrtrix_commands.sh'];
+commandsprefix = [pathstr filesep SubPrefix];
 
-if exist(commandspath,'file')
-    delete(commandspath)
-end
+% if exist(commandspath,'file')
+%     delete(commandspath)
+% end
 
-save_commands(commandspath, BaseDirPath, mrtrixParams)
+% save_commands(commandspath, BaseDirPath, mrtrixParams)
+save_commandsv2(commandsprefix, BaseDirPath, mrtrixParams)
 

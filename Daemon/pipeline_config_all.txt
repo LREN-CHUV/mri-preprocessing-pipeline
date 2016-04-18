@@ -1,0 +1,10 @@
+PipelineFunction = 'VBQ_pipeline';
+DataFolderName= 'D:\Users DATA\Users\lester\VBQ_Dicom_Data_All';
+ConvOutputFolder = 'D:\Users DATA\Users\lester\DataNifti_All';
+MPM_OutputFolder='D:\Users DATA\Users\lester\MPMs_All';
+GlobalMPMFolder='D:\Users DATA\Users\lester\GlobalMPMs_All';
+ServerFolder = 'M:\CRN\LREN\SHARE\VBQ_Output_All';
+CheckTime =     60;
+MPM_Template = 'nwTPM_SL.nii';
+ProtocolsFile='D:\Users DATA\Users\lester\Automatic_Computation\Protocols_definition.txt';
+Number_of_Sessions2StartRuning = 2;

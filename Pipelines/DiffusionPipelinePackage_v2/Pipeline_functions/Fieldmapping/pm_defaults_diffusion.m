@@ -1,4 +1,4 @@
-function pm_def = pm_defaults_diffusion(EPI_readout_time)
+function pm_def = pm_defaults_diffusion(EPI_readout_time, phase_blip_dir)
 
 % SPM5 UPDATE 23/11/07
 % Sets the default values for the FieldMap toolbox
@@ -55,7 +55,7 @@ pm_def.MFLAGS.GRAPHICS = 0; % A larger value helps segmentation to converge
 % Defaults for converting field map to voxel displacement map.
 %=======================================================================
 pm_def.EPI_BASED_FIELDMAPS = 0;         % EPI=1, other=0.
-pm_def.K_SPACE_TRAVERSAL_BLIP_DIR = -1; % +ve k-space = 1, -ve = -1.
+pm_def.K_SPACE_TRAVERSAL_BLIP_DIR = phase_blip_dir; % +ve k-space = 1, -ve = -1.
 pm_def.TOTAL_EPI_READOUT_TIME = EPI_readout_time;
 
 % Defaults for Unwarping.

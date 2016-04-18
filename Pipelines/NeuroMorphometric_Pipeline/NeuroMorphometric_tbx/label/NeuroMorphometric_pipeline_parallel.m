@@ -1,6 +1,10 @@
 function NeuroMorphometric_pipeline_parallel(PipelineConfigFile)
 
-
+% This function run in parallel the function 'NeuroMorphometric_pipeline.m' that computes individual Atlases based on the NeuroMorphometrics Atlas. This is based on the NeuroMorphometrics Toolbox.
+% This delivers three files per subject: 1) Atlas File (*.nii); 2) Volumes of the Morphometric Atlas structures (*.txt); 3) Excel File (.xls) containing
+% the volume, globals, and Multiparametric Maps (R2*, R1, MT, PD) for each structure defined in the Subject Atlas.
+% 
+% 
 %% Lester Melie-Garcia
 % LREN, CHUV. 
 % Lausanne, May 18th, 2014

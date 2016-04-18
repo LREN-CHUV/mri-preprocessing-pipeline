@@ -24,6 +24,30 @@ end
 mrtrixParams.commands.tckmap = strrep(mrtrixParams.commands.tckmap, BaseDirPath, mrtrixParams.HPCdirPATH);
 mrtrixParams.commands.tckmap = strrep(mrtrixParams.commands.tckmap, '\', '/');
 
+if mrtrixParams.connectome == true
+    mrtrixParams.commands.freesurf = strrep(mrtrixParams.commands.freesurf, BaseDirPath, mrtrixParams.HPCdirPATH);
+    mrtrixParams.commands.freesurf = strrep(mrtrixParams.commands.freesurf, '\', '/');
+    
+    mrtrixParams.commands.labelconfig = strrep(mrtrixParams.commands.labelconfig, BaseDirPath, mrtrixParams.HPCdirPATH);
+    mrtrixParams.commands.labelconfig = strrep(mrtrixParams.commands.labelconfig, '\', '/');
+    
+    mrtrixParams.commands.connectome_number = strrep(mrtrixParams.commands.connectome_number, BaseDirPath, mrtrixParams.HPCdirPATH);
+    mrtrixParams.commands.connectome_number = strrep(mrtrixParams.commands.connectome_number, '\', '/');
+    
+    mrtrixParams.commands.connectome_length = strrep(mrtrixParams.commands.connectome_length, BaseDirPath, mrtrixParams.HPCdirPATH);
+    mrtrixParams.commands.connectome_length = strrep(mrtrixParams.commands.connectome_length, '\', '/');
+    
+    for i = 1:length(mrtrixParams.commands.connectome_scalars)
+        mrtrixParams.commands.connectome_scalars{i} = strrep(mrtrixParams.commands.connectome_scalars{i}, BaseDirPath, mrtrixParams.HPCdirPATH);
+        mrtrixParams.commands.connectome_scalars{i} = strrep(mrtrixParams.commands.connectome_scalars{i}, '\', '/');
+    end
+    
+    if mrtrixParams.doSIFT2 == true
+        mrtrixParams.commands.connectome_SIFT2 = strrep(mrtrixParams.commands.connectome_SIFT2, BaseDirPath, mrtrixParams.HPCdirPATH);
+        mrtrixParams.commands.connectome_SIFT2 = strrep(mrtrixParams.commands.connectome_SIFT2, '\', '/');
+    end
+end
+
 
 % Save commands to .sh file
 fileID = fopen(commandspath, 'w');
@@ -53,5 +77,29 @@ end
 
 fprintf(fileID, '# Output TDI summary maps \n');
 fprintf(fileID, [mrtrixParams.commands.tckmap '\n\n']);
+
+if mrtrixParams.connectome == true
+    fprintf(fileID, '# Run FreeSurfer parcellation \n');
+    fprintf(fileID, [mrtrixParams.commands.freesurf '\n\n']);
+    
+    fprintf(fileID, '# Configure parcellated image into mrTrix format \n');
+    fprintf(fileID, [mrtrixParams.commands.labelconfig '\n\n']);
+    
+    fprintf(fileID, '# Create connectome matrix (number of streamlines) \n');
+    fprintf(fileID, [mrtrixParams.commands.connectome_number '\n\n']);
+    
+    fprintf(fileID, '# Create connectome matrix (length of streamlines) \n');
+    fprintf(fileID, [mrtrixParams.commands.connectome_length '\n\n']);
+    
+    fprintf(fileID, '# Create connectome matrices (scalars) \n');
+    for i=1:length(mrtrixParams.commands.connectome_scalars)
+        fprintf(fileID, [mrtrixParams.commands.connectome_scalars{i} '\n']);
+    end
+    
+    if mrtrixParams.doSIFT2 == true
+        fprintf(fileID, '\n# Create connectome matrix (SIFT2 weights) \n');
+        fprintf(fileID, [mrtrixParams.commands.connectome_SIFT2 '\n\n']);
+    end
+end
 
 fclose(fileID);

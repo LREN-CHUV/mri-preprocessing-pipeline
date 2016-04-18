@@ -27,5 +27,6 @@ sessToKeep = EPIsize>=volnum;
 
 Sessions.EPI = Sessions.EPI(sessToKeep);
 
+Sessions.EPIresolution = Sessions.EPIresolution(sessToKeep);
 
 end

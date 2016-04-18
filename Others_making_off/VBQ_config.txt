@@ -1,0 +1,7 @@
+ConvOutputFolder='D:\WORK\LREN\test_folder\DataNifti';
+MPM_OutputFolder='D:\WORK\LREN\test_folder\MPMs';
+GlobalMPMFolder='D:\WORK\LREN\test_folder\GlobalMPMs';
+ProtocolsFile='D:\WORK\Automatic_Computation\Protocols_definition.txt';
+PipelineFunction='VBQ_pipeline';
+MPM_Template = 'nwTPM_SL.nii';
+DataFolderName='D:\WORK\LREN\anne\DATA\prisma_data';

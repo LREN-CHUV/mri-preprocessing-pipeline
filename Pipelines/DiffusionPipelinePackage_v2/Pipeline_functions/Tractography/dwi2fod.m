@@ -40,7 +40,7 @@ end
 
 % Fiber response output
 if isempty(Output_fod)
-    Output_fod=fullfile(pathstr,[name '_fod.nii']);
+    Output_fod=fullfile(pathstr,[name '_fod.nii.gz']);
 end
 
 % Brain mask

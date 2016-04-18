@@ -71,7 +71,7 @@ end
 
 fsl_option = ['-fslgrad ' mrtrixParams.fslbvecs ' ' mrtrixParams.fslbvals ' '];
 lmax_option = ['-lmax ' num2str(mrtrixParams.lmax) ' '];
-mask_option = ['-mask ' Input_DWI_mask ' '];
+mask_option = '-mask - ';
 sf_option = '';
 if mrtrixParams.saveResponsemask == true
     if isempty(mrtrixParams.Resposemaskpath)
@@ -90,8 +90,19 @@ end
 
 cat_options = [fsl_option lmax_option mask_option sf_option multitread_option force_option];
 
-dwi2response_command = ['dwi2response ' cat_options Input_DWI ' ' Output_response_file];
+dwi2response_command = ['maskfilter ' Input_DWI_mask ' erode - -npass 6 | dwi2response ' cat_options Input_DWI ' ' Output_response_file];
 mrtrixParams.commands.dwi2response = dwi2response_command;
+
+% If b2000 or b3000 data use Canonical response function
+bvals = dlmread(mrtrixParams.fslbvals);
+bmax = max(bvals(:));
+if abs(bmax-2000)<200
+    mrtrixParams.commands.dwi2response = '# Using b2000 canonical response file';
+    Output_response_file = mrtrixParams.b2000CanonicalResponse;
+elseif abs(bmax-3000)<200
+    mrtrixParams.commands.dwi2response = '# Using b3000 canonical response file';
+    Output_response_file = mrtrixParams.b3000CanonicalResponse;
+end
 
 %% Run the dwi2response_command outside of matlab
 if mrtrixParams.commandsOnly==false;

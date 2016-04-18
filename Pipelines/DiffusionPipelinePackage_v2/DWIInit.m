@@ -54,9 +54,16 @@ end
 if isempty(dwParams.EPI_readout_time)
     dwParams.EPI_readout_time = EPI_readout_lookup(dwDir.inBaseName);
 end
-if isempty(dwParams.EPI_readout_time)
+if isempty(dwParams.EPI_readout_time) || dwParams.EPI_readout_time==0
     dwParams.FieldMapCorrect = 0;
 end
+
+% Create subject, session, repeat comment if relevant
+if isfield(dwParams, 'SubjectID') && isfield(dwParams, 'SessionNum') && isfield(dwParams, 'RepeatNum')
+    Subject_comment = ['Subject ID: ' dwParams.SubjectID '; Session No.: ' dwParams.SessionNum '; Repeat No.: ' dwParams.RepeatNum];
+else Subject_comment = '';
+end
+
 
 
 %% II. Make sure there is a valid phase-encode direction
@@ -113,15 +120,18 @@ if exist('StructuralTemplateFileName','var') && strcmpi(StructuralTemplateFileNa
     disp('The MNI EPI template will be used for alignment.');
     dwParams.MNIalign = 1;
     useStdXformFlag = true;
+    dwParams.anatAlign = false;
 elseif notDefined('StructuralTemplateFileName') || ~exist(StructuralTemplateFileName,'file')
     StructuralTemplateFileName = dwDir.mnB0Name;
     disp('The mnb0 template will be used for alignment.');
     dwParams.MNIalign = 0;
     useStdXformFlag = false;
+    dwParams.anatAlign = false;
 else
     disp('The user defined template will be used for alignment.');
     dwParams.MNIalign = 0;
     useStdXformFlag = false;
+    dwParams.anatAlign = true;
 end
 fprintf('StructuralTemplateFileName = %s;\n', StructuralTemplateFileName);
 
@@ -145,7 +155,7 @@ end
 % reference image. If the alignment is computed doResamp will be true.
 [doAlign, doResamp] = dtiInitAlign(dwParams,dwDir,doResamp);
 
-if dwParams.MNIalign == 0;
+if dwParams.MNIalign == 0 && ~exist(StructuralTemplateFileName,'file')
     acpcXform = dwRaw.qto_xyz;
     save(dwDir.acpcFile, 'acpcXform');
     
@@ -184,7 +194,7 @@ end
 % Check to see if bvecs should be reoriented and reorient if necessary. If
 % the conditions are met then the bvecs are reoriented and the aligned
 % bvals file is saved from bvals.
-dtiInitReorientBvecs(dwParams, dwDir, doResamp, doBvecs, bvecs, bvals);
+BvecsRotated = dtiInitReorientBvecs(dwParams, dwDir, doResamp, doBvecs, bvecs, bvals);
 
 
 %% XI. Load aligned raw data and clear unaligned raw data
@@ -192,7 +202,7 @@ dtiInitReorientBvecs(dwParams, dwDir, doResamp, doBvecs, bvecs, bvals);
 % dwRawAligned = niftiRead(dwDir.dwAlignedRawFile);
 bvecs = dlmread(dwDir.alignedBvecsFile);
 % On prisma data the x-gradients need to be inverted
-if doResampleRaw
+if BvecsRotated
     bvecs(1,:) = bvecs(1,:)*-1;
 end
 bvals = dlmread(dwDir.alignedBvalsFile);
@@ -204,7 +214,7 @@ clear dwRaw;
 
 if doResampleRaw
     
-    sortDWIdata(bvals,bvecs,dwDir.dwAlignedRawFile,dwDir.outBaseDir,'Eddy Corrected')
+    sortDWIdata(bvals,bvecs,dwDir.dwAlignedRawFile,dwDir.outBaseDir,Subject_comment)
     
     dwRawAligned = niftiRead(dwDir.dwAlignedRawFile);
     bvecs = dlmread(dwDir.alignedBvecsFile);
@@ -222,7 +232,7 @@ end
 
 if doFieldMapCorrect && exist(dwDir.dwAlignedRawFile,'file')>0 && doResampleRaw==1
     disp('Initiating field map correction...');
-    dwDir.dwUnwarpedRawFile=DTI_DistCorr(dwDir.dataDir,dwDir.dataDir,dwDir.dwAlignedRawFile,dwParams.EPI_readout_time);
+    dwDir.dwUnwarpedRawFile=DTI_DistCorr(dwDir.dataDir,dwDir.dataDir,dwDir.dwAlignedRawFile,dwParams.EPI_readout_time, dwParams.Phase_Trav_BLIP_DIR, Subject_comment);
     
     splitrawname = strsplit(dwDir.dwUnwarpedRawFile,'.');
     newbval = [char(splitrawname(1)) '.bval'];
@@ -232,7 +242,7 @@ if doFieldMapCorrect && exist(dwDir.dwAlignedRawFile,'file')>0 && doResampleRaw=
     
     %     Can also delete aligned but not unwarped nifti, bval and bvec files
     delete([dwDir.outBaseDir '.bvals'],[dwDir.outBaseDir '.bvecs'],...
-        [dwDir.outBaseDir '.nii*'],[dwDir.outBaseDir '_mnb0*'])
+        [dwDir.outBaseDir '.nii*'])
     
     
 else if doResampleRaw==1
@@ -260,7 +270,8 @@ else if exist([dwDir.outBaseDir '_unwarped.nii.gz'],'file')>0
         dwDir.dwPreprocessedBaseDir=[dwDir.outBaseDir];
     end
 end
-
+[~, dwDir.preprocBaseName] = fileparts(dwDir.dwPreprocessedBaseDir);
+dwDir.outBaseName = dwDir.preprocBaseName;
 doMask=doResampleRaw;
 
 %% XV. Create mask, b0 data and apply bias field correction for model fitting
@@ -272,15 +283,31 @@ TPMfilename=fullfile(dwDir.PipelineBaseDir,'templates','nwTPM_corr.nii');
 if ~exist(b0maskname,'file') || doResampleRaw==1
     CreateMeanB0(dwDir.dwPreprocessedFile, dwDir.dwPreprocessedbvals, b0name);
     gunzip([dwDir.dwPreprocessedBaseDir '*.gz'])
-    pause(2)
-    [~, biasout] = brain_mask(b0name,b0maskname,TPMfilename,1);
+    [b0maskname, biasout] = brain_mask(b0name,b0maskname,TPMfilename,1);
     
     %     Apply the bias field correction to the mnb0 then to the corrected
     %     DWIs
     ApplyBiasField(b0name,biasout)
     ApplyBiasField(dwDir.dwPreprocessedFile,biasout)
     gunzip([dwDir.dwPreprocessedBaseDir '*.gz'])
-    %     PrepareDATA(dwDir.dwPreprocessedFile,b0maskname);
+    
+    if dwParams.anatAlign
+        [anatpath, anatname] = fileparts(StructuralTemplateFileName);
+        anatmask = [anatpath filesep anatname '_mask.nii'];
+        brain_mask(StructuralTemplateFileName,anatmask,TPMfilename,1);
+%         maskbrain(StructuralTemplateFileName,anatmask,StructuralTemplateFileName)
+    end
+    
+    
+    % Co-register unwarped data to template without reslicing
+    if doFieldMapCorrect && doResampleRaw==1
+        coreg_DWIdata(StructuralTemplateFileName,b0name,dwDir.dwPreprocessedFile,Subject_comment)
+    end
+    
+    % Create more robust mask from anatomical data
+    if dwParams.anatAlign
+        reslice_image(b0name,anatmask,b0maskname)
+    end
 end
 
 
@@ -329,6 +356,7 @@ if dwParams.fitNODDI==1 && nnz(bvals>1800)>5
         end
         fitparams = pickfiles([dwDir.subjectDir filesep 'NODDI'],{'FIT_parameters.nii'});
         extract_AMICO(dwDir,fitparams)
+        gunzip([dwDir.subjectDir filesep 'NODDI' filesep '*.gz'])
     end
 end
 
@@ -336,42 +364,85 @@ end
 
 if nnz(bvals>1500)>29
     % Create HARDI directory for all tractogrphy processing
-    dwDir.HARDIdir=[dwDir.subjectDir '\HARDI'];
+    dwDir.HARDIdir=[dwDir.subjectDir filesep 'HARDI'];
     if ~exist(dwDir.HARDIdir,'dir');
         mkdir(dwDir.HARDIdir);
     end
     sortHARDIdata(dwDir.dwPreprocessedbvals,dwDir.dwPreprocessedbvecs,dwDir.dwPreprocessedFile,[dwDir.HARDIdir filesep dwDir.outBaseName '_HARDI'],'HARDI high b-value data')
     
+    % Find MT file in subject directory. If no MT try MT_m (masked)
+    MTfile = cellstr(pickfiles(fullfile(dwDir.subjectDir,'raw'),{'_MT_m.nii'},{'.'},{'.gz'}));
+    if exist(MTfile{1},'file')
+        StructuralTemplateFileName = MTfile{1};
+    else MTfile = cellstr(pickfiles(fullfile(dwDir.subjectDir,'raw'),{'_MT.nii'},{'.'},{'.gz'}));
+        if exist(MTfile{1},'file')
+            StructuralTemplateFileName = MTfile{1};
+        end
+    end
+    
+    % If PDw also exists then mask structural to be sure
+    PDw = cellstr(pickfiles(fullfile(dwDir.subjectDir),{'_PDw.nii'},{'.'},{'.gz','mask','BiasField'}));
+    if ~isempty(PDw{1})
+        
+        structnii = niftiRead(StructuralTemplateFileName);
+        PDnii = niftiRead(PDw{1});
+        
+        structnii.data(PDnii.data<=100) = 0;
+        structnii.data(structnii.data<0) = 0;
+        
+        if(numel(structnii.pixdim)>3), TR = structnii.pixdim(4);
+        else                       TR = 1;
+        end
+        
+        dtiWriteNiftiWrapper(single(structnii.data), structnii.qto_xyz, StructuralTemplateFileName, 1, '', [],[],[],[], TR);
+        [~,~,ext] = fileparts(StructuralTemplateFileName);
+        if strfind(ext,'gz')
+            gunzip(StructuralTemplateFileName)
+        else
+            gunzip([StructuralTemplateFileName '*gz'])
+        end
+    end
     
     [~, anat_name, anat_ext] = fileparts(StructuralTemplateFileName);
     
     HARDI_DWIs = [dwDir.HARDIdir filesep dwDir.outBaseName '_HARDI.nii.gz'];
     HARDI_mask = [dwDir.HARDIdir filesep dwDir.outBaseName '_mask.nii'];
     HARDI_anat = [dwDir.HARDIdir filesep anat_name anat_ext];
+    
+    % Copy anatomy file and mask
     if ~exist(HARDI_mask,'file')
         copyfile(b0maskname,HARDI_mask);
     end
     if ~exist(HARDI_anat,'file')
         copyfile(StructuralTemplateFileName,HARDI_anat);
     end
+    
     if ~isfield(dwParams.mrtrixParams,'lmax')
         dwParams.mrtrixParams = default_mrtrixParams;
     end
     
+    dwDir.fsurfdir=[dwDir.subjectDir filesep 'qMRI'];
     if dwParams.mrtrixParams.connectome==1
-        % Create freesurfer folder for all surface processing
+        % Create folder for all FreeSurfer surface processing
         dwDir = freesurf_setup(dwDir);
     end
     
+    if isfield(dwParams,'SubjectID') && ~isempty(dwParams.SubjectID)
+        pathsplit = strsplit(dwDir.subjectDir,[filesep dwParams.SubjectID]);
+        BaseDirPath = pathsplit{1};
+        SubjectName = dwParams.SubjectID;
+    else
+        % Sets the path which will be different on the HPC system
+        pathsplit = strsplit(dwDir.subjectDir,[filesep 'PR0']);
+        BaseDirPath = pathsplit{1};
+        SubjectName = '';
+    end
     
-    [BaseDirPath, SubjectName] = fileparts(dwDir.subjectDir);
+    
     dwParams.mrtrixParams.SubjectName = SubjectName;
+    dwParams.mrtrixParams.qMRIpath = dwDir.fsurfdir;
     
     mrtrix_wrapper(HARDI_DWIs,HARDI_mask,HARDI_anat,BaseDirPath,dwParams.mrtrixParams)
     
 end
-
-
-
-
 

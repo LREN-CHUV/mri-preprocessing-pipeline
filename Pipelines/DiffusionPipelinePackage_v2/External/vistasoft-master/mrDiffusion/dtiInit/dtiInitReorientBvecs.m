@@ -1,4 +1,4 @@
-function dtiInitReorientBvecs(dwParams,dwDir,doResamp,doBvecs,bvecs,bvals)
+function BvecsRotated = dtiInitReorientBvecs(dwParams,dwDir,doResamp,doBvecs,bvecs,bvals)
 % 
 % function doRawResample = dtiInitResample(dwParams,dwDir)
 % 
@@ -16,6 +16,7 @@ function dtiInitReorientBvecs(dwParams,dwDir,doResamp,doBvecs,bvecs,bvals)
 % 
 % If bvecs file was computed earlier doBvecs will = true. If clobber = true
 % or the aligned BVs files do not exist we reorient and save.
+BvecsRotated = false;
 if doBvecs || (doResamp && dwParams.clobber == -1) ...
            || dwParams.clobber == 1 ... 
            || ~exist(dwDir.alignedBvecsFile,'file') ...
@@ -23,6 +24,7 @@ if doBvecs || (doResamp && dwParams.clobber == -1) ...
     % Reorient and save the b-vectors and bvals  
     dtiRawReorientBvecs(bvecs, dwDir.ecFile, dwDir.acpcFile, dwDir.alignedBvecsFile);
     dlmwrite(dwDir.alignedBvalsFile,bvals,' ');
+    BvecsRotated = true;
 else
     % If clobber = 'ask' prompt the user to overwrite
     if dwParams.clobber == 0 
@@ -34,6 +36,7 @@ else
             % b-vectors and bvals 
             dtiRawReorientBvecs(dwDir.bvecsFile, dwDir.ecFile, dwDir.acpcFile, dwDir.alignedBvecsFile);
             dlmwrite(dwDir.alignedBvalsFile,bvals,' ');
+            BvecsRotated = true;
         end
     end
 end

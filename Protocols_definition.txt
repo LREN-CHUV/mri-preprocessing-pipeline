@@ -111,6 +111,7 @@ ep2d_diff_NODDI_64ch_2mm_101dirs_bmax2300
 ep2d_diff_b1000_dir72_2.3mm
 ep2d_diff_b1000_dir73_2mm
 ep2d_diff_NODDI_2mm_64ch
+ep2d_diff_NODDI_MB2_2pt2mm
 [fieldmap]
 gre_field_mapping_for1mmMPM
 gre_field_mapping_for1mmMPM
@@ -121,6 +122,7 @@ gre_field_mapping_1acq_rl
 Field_mapping
 Field_mapping
 gre_field_mapping_1acq_rl_short
+gre_field_mapping_1acq_rl_64ch
 [ReadoutTimes]
 29.1500
 28.086
@@ -131,6 +133,7 @@ gre_field_mapping_1acq_rl_short
 0.000
 0.000
 29.1500
+49.12
 __MPM__
 [fieldmap]
 gre_field_mapping_1acq_rl_short
@@ -243,6 +246,7 @@ __MPRAGE__
 [MPRAGE]
 MPRAGE_P3
 t1_mprage_tra_p2_iso
+Anatomic_MT
 __fMRI__
 [EPI]
 al_mepi2d_3mm                                           

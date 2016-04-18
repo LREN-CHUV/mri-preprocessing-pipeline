@@ -26,12 +26,19 @@ end
 if exist(Input_FOD,'file')
     [pathstr,name,ext] = fileparts(Input_FOD);
 else [pathstr,name,ext] = fileparts(mrtrixParams.DWIpath);
-    name = [name '_fod'];
+    CC = strsplit(name,'.');
+    name = [CC{1} '_fod'];
 end
 
 % Track output
 if isempty(Output_tck)
-    Output_tck=fullfile(pathstr,[name '.tck']);
+    if mrtrixParams.useHPC
+        CC = strsplit(name,'.');
+        Output_tck=fullfile(mrtrixParams.HPCscratch,[CC{1} '.tck']);
+    else
+        CC = strsplit(name,'.');
+        Output_tck=fullfile(pathstr,[CC{1} '.tck']);
+    end
 end
 
 % Seed mask
@@ -54,7 +61,8 @@ end
 
 %% Build tckgen command
 
-Seedmask_option = ['-seed_image ' Seed_mask ' '];
+% Seedmask_option = ['-seed_image ' Seed_mask ' '];
+Seedmask_option = '';
 Brainmask_option = ['-mask ' Brain_mask ' '];
 multitread_option = ['-nthreads ' num2str(mrtrixParams.numthreads) ' '];
 if mrtrixParams.multithread==false
@@ -89,7 +97,7 @@ if mrtrixParams.downsample==1
     downsample_option = ['-downsample ' num2str(mrtrixParams.downsample_factor) ' ']; else downsample_option = '';
 end
 if mrtrixParams.doACT==1 && (exist(mrtrixParams.Output5TT,'file') || mrtrixParams.commandsOnly==1)
-    ACT_option = ['-act ' mrtrixParams.Output5TT ' ']; else ACT_option = '';
+    ACT_option = ['-act ' mrtrixParams.Output5TT ' -crop_at_gmwmi ']; else ACT_option = '';
 end
 if mrtrixParams.doACT==1 && mrtrixParams.backtrack==1 && (exist(mrtrixParams.Output5TT,'file') || mrtrixParams.commandsOnly==1)
     backtract_option = ['-backtrack ']; else backtract_option = '';
@@ -101,10 +109,11 @@ if mrtrixParams.forceoverwrite==true
     force_option = '-force ';
 else force_option = '';
 end
+seed_option = ['-seed_dynamic ' Input_FOD ' '];
 
 cat_options = [Seedmask_option, Brainmask_option, multitread_option, algorithm_option ...
     numtracks_option, StepSize_option, Angle_option, maxLength_option, minLength_option ...
-    cutoff_option, rk4_option, downsample_option, ACT_option, backtract_option quiet_option force_option];
+    cutoff_option, rk4_option, downsample_option, ACT_option, backtract_option quiet_option force_option seed_option];
 
 tckgen_command = ['tckgen ' cat_options Input_FOD ' ' Output_tck];
 mrtrixParams.commands.tckgen = tckgen_command;

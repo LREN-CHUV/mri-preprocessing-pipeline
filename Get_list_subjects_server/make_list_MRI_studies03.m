@@ -10,11 +10,11 @@ end;
 
 if exist('NewOutputXLSFile','var')
     data_xls{1,1} = 'Subject ID'; data_xls{1,2} = 'Subject Name'; data_xls{1,3} = 'Age';
-    data_xls{1,4} = 'Birth Date'; data_xls{1,5} = 'Gender'; data_xls{1,6} = 'Study Description'; data_xls{1,7} = 'Study Date';
-    data_xls{1,8} = 'Control (C) / Patient=non Control (P) / Incidental Finding (IC)'; data_xls{1,9} = 'visual check: MPM';
-    data_xls{1,10} = 'R2s';data_xls{1,11} = 'R1_m'; data_xls{1,12} = 'PD'; data_xls{1,13} = 'MT_m';data_xls{1,14} = 'c1';
-    data_xls{1,15}=  'comments'; data_xls{1,16}= 'Neuropsychological Test (Y/N)'; data_xls{1,17}= 'fMRI'; data_xls{1,18}= 'DWI'; 
-    data_xls{1,19}= 'MPRAGE'; data_xls{1,20}= 'MPMs'; data_xls{1,21}= 'MPM_Resolution'; data_xls{1,22}= 'List of Sequences';
+    data_xls{1,4} = 'Birth Date'; data_xls{1,5} = 'Gender'; data_xls{1,6} = 'Handedness';data_xls{1,7} = 'Study Description'; data_xls{1,8} = 'Study Date';
+    data_xls{1,9} = 'Control (C) / Patient=non Control (P) / Incidental Finding (IC)'; data_xls{1,10} = 'visual check: MPM';
+    data_xls{1,11} = 'R2s';data_xls{1,12} = 'R1_m'; data_xls{1,13} = 'PD'; data_xls{1,14} = 'MT_m';data_xls{1,15} = 'c1';
+    data_xls{1,16}=  'comments'; data_xls{1,17}= 'Neuropsychological Test (Y/N)'; data_xls{1,18}= 'fMRI'; data_xls{1,19}= 'DWI'; 
+    data_xls{1,20}= 'MPRAGE'; data_xls{1,21}= 'MPMs'; data_xls{1,22}= 'MPM_Resolution'; data_xls{1,23}= 'List of Sequences';
 end;
 
 if exist('OldOutputXLSFile','var')
@@ -30,7 +30,7 @@ end;
 BlackList = {'deleteit';'Phantom2';'Phantomb2300NODDItest';'PhantomDiffusionTest';'SHIRAISHI';'QAtest';'QAfbirn';'QSMPhantom';'B1test'; ...
              'MPMPhantom';'Phantom2_water';'IRsequtest';'Evagain';'Gratio';'test_siemens';'QA_FBIRN';'QAFBIRN';'testphase';'TEST_LIQUID'; ...
              'PMC_MPM';'exv_post-fix-im';'exv_post-fix-im2';'H2O'; 'ACSFcool';'ACSFwarm';'ACSFwarm-h';'exv_post-fix-del'; ...
-             'ExvivoPhantomTesting';'PBS';'DELETEIT';'PR';'`DELETEIT'};
+             'ExvivoPhantomTesting';'PBS';'DELETEIT';'PR';'`DELETEIT';'test2';'DELETE IT'};
          
 fMRI_protocols = cellstr(get_protocol_names(ProtocolsFile,'__fMRI__','[EPI]')); % protocol name ..
 DWI_protocols  = cellstr(get_protocol_names(ProtocolsFile,'__DWI__','[diffusion]')); % protocol name ..
@@ -40,8 +40,9 @@ MPRAGE_protocols   = cellstr(get_protocol_names(ProtocolsFile,'__MPRAGE__','[MPR
 
 r = 1; % Subjects counter
 nr = 1; % New Subjects counter
-YesLabel = {'Yes'}; NoLabel = {'No'};
+YesLabel = {'Yes'}; NoLabel = {'No'}; NoMPMsLabel = 'NoMPM';
 DateFolders = getListofFolders(ServerDataFolder);
+Cte = 365.24225; % mean number of days in a year.
 for i=1:length(DateFolders)
     InputFolders = getListofFolders([ServerDataFolder,filesep,DateFolders{i}]);
     for j=1:length(InputFolders)
@@ -59,15 +60,19 @@ for i=1:length(DateFolders)
             info = dicominfo(dicom_files(1,:));
             data_xls{nr,1} = info.PatientID;
             data_xls{nr,2} = info.PatientName.FamilyName;
-            pAge = info.PatientAge;
-            data_xls{nr,3} = str2double(pAge(1:end-1));
+            %pAge = info.PatientAge;
+            %data_xls{nr,3} = str2double(pAge(1:end-1));
             xdate = info.PatientBirthDate;
             data_xls{nr,4} = [xdate(7:8),'.',xdate(5:6),'.',xdate(1:4)];
             data_xls{nr,5} = info.PatientSex;
-            data_xls{nr,6} = info.StudyDescription;
+            data_xls{nr,7} = info.StudyDescription;
             xdate = info.StudyDate;
-            data_xls{nr,7} = [xdate(7:8),'.',xdate(5:6),'.',xdate(1:4)];
+            data_xls{nr,8} = [xdate(7:8),'.',xdate(5:6),'.',xdate(1:4)];
             
+            L1 = datenum(data_xls{nr,4},'dd.mm.yyyy');
+            L2 = datenum(data_xls{nr,8},'dd.mm.yyyy');
+            data_xls{nr,3} = str2num(sprintf('%2.2f',(L2-L1)/Cte));
+                        
             %%
             Nsession = length(Subj_SessionFolder);
             SubjSequencesList = {};
@@ -102,27 +107,28 @@ for i=1:length(DateFolders)
             end;
             %% Filling the new information in the Table ...
             if any(ExistfMRI)  % fMRI
-                data_xls(nr,17)= YesLabel;
-            else
-                data_xls(nr,17)= NoLabel;
-            end;
-            if any(ExistDWI)  % DWI
                 data_xls(nr,18)= YesLabel;
             else
                 data_xls(nr,18)= NoLabel;
             end;
-            if any(ExistMPRAGE)  % MPRAGE
+            if any(ExistDWI)  % DWI
                 data_xls(nr,19)= YesLabel;
             else
                 data_xls(nr,19)= NoLabel;
             end;
-             if any(ExistMPM)  % MPMs
-                data_xls(nr,20)= YesLabel;                
+            if any(ExistMPRAGE)  % MPRAGE
+                data_xls(nr,20)= YesLabel;
             else
                 data_xls(nr,20)= NoLabel;
             end;
-            data_xls(nr,21)= {ResLabel};
-            data_xls(nr,22)= {SequencesLabel};            
+             if any(ExistMPM)  % MPMs
+                data_xls(nr,21)= YesLabel;                
+            else
+                data_xls(nr,21)= NoLabel;
+                data_xls{nr,10}= NoMPMsLabel;
+            end;
+            data_xls(nr,22)= {ResLabel};
+            data_xls(nr,23)= {SequencesLabel};            
             
             %%
             

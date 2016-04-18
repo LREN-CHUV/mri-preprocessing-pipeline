@@ -18,7 +18,7 @@ end
 % Set output for 5TT file
 if isempty(Output5TT)
     [pathstr,name] = fileparts(AnatomicalImage);
-    Output5TT = [pathstr filesep name '_5TT.nii'];
+    Output5TT = [pathstr filesep name '_5TT.nii.gz'];
 end
 
 

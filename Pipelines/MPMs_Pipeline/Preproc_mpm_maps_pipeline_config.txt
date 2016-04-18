@@ -1,0 +1,7 @@
+DataFolderName = 'M:\CRN\LREN\SHARE\VBQ_Output_All\DataNifti_All\';
+ProtocolsFile = 'D:\Users DATA\Users\lester\Automatic_Computation_under_Organization\Protocols_definition.txt';
+MPM_OutputFolder = 'D:\Users DATA\Users\lester\ZZZ_MPMs\MPMs_All\';
+GlobalMPMFolder = 'D:\Users DATA\Users\lester\ZZZ_MPMs\GlobalMPMs_All\';
+MPM_Template = 'nwTPM_sl2.nii';
+ServerFolder = 'M:\CRN\LREN\SHARE\VBQ_Output_All\';
+doUNICORT = false;

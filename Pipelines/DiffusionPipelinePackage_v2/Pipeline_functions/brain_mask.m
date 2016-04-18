@@ -1,8 +1,8 @@
-function [maskout, biasout] = brain_mask(filename,outputname,TPMfilename,save_bias_field)
+function [outputname, biasout] = brain_mask(filename,outputname,TPMfilename,save_bias_field)
 % brain_mask(filename,outputname,TPMfilename,save_bias_field)
-% 
+%
 % Creates brain mask for GM, WM and CSF voxels
-% 
+%
 % filename = file path of nifti file to mask
 % outputname = path name of output mask
 % TPMfilename = location of tissue probability map (TPM) to use
@@ -13,7 +13,8 @@ if nargin<4 || ~save_bias_field==1
 end
 
 if ~exist(TPMfilename,'file')
-    TPMfilename=uigetfile('.nii','Please select the tissue probability map (TPM)');
+    [FileName,PathName]=uigetfile('.nii','Please select the tissue probability map (TPM)');
+    TPMfilename = fullfile(PathName,FileName);
 end
 
 [pathstr, name, ext] = fileparts(filename);
@@ -126,9 +127,24 @@ matlabbatch{2}.spm.util.defs.out{1}.pull.fwhm = [0 0 0];
 
 spm_jobman('run',matlabbatch);
 
+if ~exist(pathstr,'dir')
+    pathstr = 'pwd';
+end
+
 subcort_nii=niftiRead([pathstr '\' 'wMNIsubcortical_mask.nii']);
 
 brainmask_nii=niftiRead(outputname);
+
+% Dilate mask to ensure full brain inclusion
+dilatepath = which('imdilate');
+if ispc && ~isempty(dilatepath)
+    brainmask_nii.data = imdilate(brainmask_nii.data,ones(5, 5, 5));
+    brainmask_nii.data = imerode(brainmask_nii.data,ones(4, 4, 4));
+elseif isunix
+    [status, cmdout] = unix(['maskfilter ' outputname ' dilate ' outputname ' -npass 5']);
+    [status, cmdout] = unix(['maskfilter ' outputname ' erode ' outputname ' -npass 4']);
+    brainmask_nii=niftiRead(outputname);
+end
 
 newmask=zeros(size(brainmask_nii.data));
 
@@ -138,12 +154,13 @@ if(numel(brainmask_nii.pixdim)>3), TR = brainmask_nii.pixdim(4);
 else                       TR = 1;
 end
 
-dtiWriteNiftiWrapper(newmask, brainmask_nii.qto_xyz, outputname, 1, '', [],[],[],[], TR);
+dtiWriteNiftiWrapper(int16(newmask), brainmask_nii.qto_xyz, outputname, 1, '', [],[],[],[], TR);
 
 pause(2)
 
 if exist([outputname '.gz'],'file')>0
     gunzip([outputname '.gz'])
+    delete([outputname '.gz'])
 end
 
 % Delete c1 to c5 segmentations
@@ -186,7 +203,11 @@ end
 
 delete([pathstr '\' 'wMNIsubcortical_mask.nii']);
 
-maskout = outputname;
+% if exist([outputname '.gz'],'file')>0
+%     maskout = [outputname '.gz'];
+% else
+%     maskout = outputname;
+% end
 
 if exist([pathstr filesep 'BiasField_' name ext],'file')>0
     biasout = [pathstr filesep 'BiasField_' name ext];

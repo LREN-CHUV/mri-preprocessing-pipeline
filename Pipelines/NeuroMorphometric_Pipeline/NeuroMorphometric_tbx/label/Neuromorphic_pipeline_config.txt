@@ -1,4 +1,4 @@
 MPMInputFolder='M:\CRN\LREN\SHARE\VBQ_Output_All\MPMs_All';
 LocalFolder='D:\Users DATA\Users\lester\ZZZ_Neuromorphics_Atlasing';
 AtlasingServerFolder='M:\CRN\LREN\SHARE\ZZZ_Neuromorphics_Atlasing';
-ProtocolsFile='D:\Users DATA\Users\lester\Automatic_Computation\Protocols_definition.txt';
+ProtocolsFile='D:\Users DATA\Users\lester\Automatic_Computation_under_Organization\Protocols_definition.txt';

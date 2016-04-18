@@ -20,7 +20,7 @@ Subj_OutputFolder = [OutputFolder,SubjectID,filesep];
 SubjectFolder = [DataFolder,SubjectID,filesep];
 SessionFolders = getListofFolders(SubjectFolder);
 Ns = length(SessionFolders);  % Number of sessions ...
-itwasprocessed = false;
+itwasprocessed = false; itwasprocessed_here = false;
 for i=1:Ns
     Session = SessionFolders{i};
     [valid_protocols_EPI,valid_protocols_fieldmap,valid_protocols_anatomic,valid_pmDefaultFile,NDummyScans] = get_fMRI_sequences([SubjectFolder,SessionFolders{i},filesep],ProtocolsFile); % number of valid protocols ...

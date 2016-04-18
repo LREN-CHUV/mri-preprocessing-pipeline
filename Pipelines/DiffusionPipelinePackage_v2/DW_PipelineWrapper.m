@@ -1,4 +1,4 @@
-function DW_PipelineWrapper(DWIpath,FieldmapNiiFiles, Anatomical_Image,Subj_OutputFolder,SubjectID,Session,RepeatNum,SequenceName)
+function DW_PipelineWrapper(DWIpath,FieldmapNiiFiles, Anatomical_Image,Subj_OutputFolder,SubjectID,Session,RepeatNum,SequenceName,ReadoutTime)
 % DWIpath   = filepath of diffusion nifti data e.g. 'D:\MBdata\Subject1v3_DS\raw\20140605_081835cmrrmbep2ddiff165dirsMB3s021a001.nii'
 % FieldmapNiiFiles = a cell structure listing paths to subject field map images
 % Anatomical_Image = path to preprocessed MT MPM. MPRAGE as alternative
@@ -16,6 +16,11 @@ function DW_PipelineWrapper(DWIpath,FieldmapNiiFiles, Anatomical_Image,Subj_Outp
 
 bval = pickfiles(filepath,{'.bval'});
 bvec = pickfiles(filepath,{'.bvec'});
+% if ~exist(bval,'file')
+%     [uppath, upname] = fileparts(filepath);
+%     bval = pickfiles(uppath,{'.bval'});
+%     bvec = pickfiles(uppath,{'.bvec'});
+% end
 
 %% Create default directory structure and copy files
 
@@ -28,10 +33,18 @@ end
 
 if exist(Anatomical_Image,'file')
     [anatpath, anatname, anatext] = fileparts(Anatomical_Image);
-    copyfile(Anatomical_Image,[Subj_OutputFolder filesep 'raw' filesep anatname anatext]);
     
-% Find all quantitative MPM files and copy to qMRI folder
-    qMPMs = cellstr(pickfiles(anatpath,{'.'},{'_A.nii','_MT.nii','_R1.nii','_R2s.nii'}));
+    % Find all quantitative MPM files and copy to qMRI folder
+    S = pickfiles(anatpath,{'.'},{'_PDw.nii','_MT.nii','_R1.nii','_R2s.nii'});
+    if ~isempty(S)
+        qMPMs = cellstr(S);
+        copyfile(Anatomical_Image,[Subj_OutputFolder filesep 'raw' filesep anatname anatext]);
+        Anatomical_Image = [Subj_OutputFolder filesep 'raw' filesep anatname anatext];
+    else
+        qMPMs = cellstr(Anatomical_Image);
+        copyfile(Anatomical_Image,[Subj_OutputFolder filesep 'raw' filesep SubjectID '_MPRAGE' anatext]);
+        Anatomical_Image = [Subj_OutputFolder filesep 'raw' filesep SubjectID '_MPRAGE' anatext];        
+    end;
     for i=1:length(qMPMs)
         if exist(qMPMs{i},'file')
             if ~exist([Subj_OutputFolder filesep 'qMRI'],'dir')
@@ -41,8 +54,6 @@ if exist(Anatomical_Image,'file')
             copyfile(qMPMs{i},[Subj_OutputFolder filesep 'qMRI' filesep MPMname MPMext]);
         end
     end
-    
-    Anatomical_Image = [Subj_OutputFolder filesep 'raw' filesep anatname anatext];
 else Anatomical_Image = '';
 end
 
@@ -59,12 +70,13 @@ end;
 
 %% Initiate pipeline with reorganised data
 
-dwParams                    = dtiInitParams;
-dwParams.SubjectID          = SubjectID;
-dwParams.SessionNum         = Session;
-dwParams.RepeatNum          = RepeatNum;
-% Add lookup to find readout time from sequence name
-dwParams.EPI_readout_time = EPI_readout_lookup(SequenceName);
+% dwParams                    = dtiInitParams;
+% dwParams.SubjectID          = SubjectID;
+% dwParams.SessionNum         = Session;
+% dwParams.RepeatNum          = RepeatNum;
+% dwParams.SequenceName       = SequenceName;
+% % Add lookup to find readout time from sequence name
+% dwParams.EPI_readout_time = ReadoutTime; %EPI_readout_lookup(SequenceName);
 
 
-DWIInit(newDWIpath, Anatomical_Image, dwParams);
+% DWIInit(newDWIpath, Anatomical_Image, dwParams);

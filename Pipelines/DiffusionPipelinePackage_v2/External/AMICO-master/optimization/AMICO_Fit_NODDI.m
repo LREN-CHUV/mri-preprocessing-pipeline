@@ -118,6 +118,7 @@ function AMICO_Fit_NODDI(fitmethod)
 		xx =  x(1:end-1);
 		xx = xx ./ ( sum(xx) + eps );
 		f1 = KERNELS.A_icvf * xx;
+        % 
 		f2 = (1-KERNELS.A_icvf) * xx;
         
         % icvf map

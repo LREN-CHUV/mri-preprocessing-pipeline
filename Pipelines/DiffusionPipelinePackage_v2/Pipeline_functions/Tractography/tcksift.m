@@ -26,7 +26,8 @@ end
 if exist(Input_FOD,'file')
     [pathstr,name,ext] = fileparts(Input_FOD);
 else [pathstr,name,ext] = fileparts(mrtrixParams.DWIpath);
-    name = [name '_fod'];
+    CC = strsplit(name,'.');
+    name = [CC{1} '_fod'];
 end
 
 % Input track file
@@ -37,8 +38,16 @@ end
 
 % Track output
 if isempty(Output_tck)
-    Output_tck=fullfile(pathstr,[name '_SIFT.tck']);
+    CC = strsplit(name,'.');
+    Output_tck=fullfile(pathstr,[CC{1} '_SIFT.tck']);
 end
+
+% SIFT2 weights file
+if mrtrixParams.doSIFT2
+    SIFT2_weights = fullfile(pathstr,[CC{1} '_SIFT2.txt']);
+else SIFT2_weights = [];
+end
+mrtrixParams.SIFT2_weights = SIFT2_weights;
 
 % Check/Load settings
 if isempty(mrtrixParams) || ~isfield(mrtrixParams,'lmax')
@@ -46,7 +55,7 @@ if isempty(mrtrixParams) || ~isfield(mrtrixParams,'lmax')
 end
 
 
-%% Build tckgen command
+%% Build tcksift commands
 
 if mrtrixParams.commandsOnly ==1 && mrtrixParams.doACT ==1
     ACT_option = ['-act ' mrtrixParams.Output5TT ' '];
@@ -59,11 +68,23 @@ if mrtrixParams.forceoverwrite==true
     force_option = '-force ';
 else force_option = '';
 end
+if mrtrixParams.doSIFT
+    sift2tracks = Output_tck;
+else sift2tracks = Input_tck;
+end
+if mrtrixParams.doACT
+    act_option = ['-act ' mrtrixParams.Output5TT];
+else act_option = '';
+end
 
-cat_options = [ACT_option, Terminate_option force_option];
+cat_options = [ACT_option Terminate_option force_option];
 
-tcksift_command = ['tcksift ' Input_tck ' ' Input_FOD ' ' Output_tck ' ' cat_options];
-mrtrixParams.commands.tcksift = tcksift_command;
+tcksift_command = ['tcksift ' Input_tck ' ' Input_FOD ' ' Output_tck ' ' cat_options '; rm ' Input_tck];
+if mrtrixParams.doSIFT2
+tcksift2_command = ['tcksift2 ' sift2tracks ' ' Input_FOD ' ' SIFT2_weights ' ' act_option];
+else tcksift2_command = [];
+end
+mrtrixParams.commands.tcksift = [tcksift_command '; ' tcksift2_command];
 
 
 %% Run the tckgen_command outside of matlab

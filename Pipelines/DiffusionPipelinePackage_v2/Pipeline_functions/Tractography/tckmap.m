@@ -37,10 +37,13 @@ end
 
 % Track density imaging (tdi) output
 if isempty(Output_tdi)
-    if mrtrixParams.do_DEC_tdi == true
-        Output_tdiDEC = fullfile(pathstr,[name SIFT_suffix '_' 'DEC' mrtrixParams.tdi_contrast '.nii']);
+    if mrtrixParams.doSIFT2 == true
+        SIFT_suffix = 'SIFT2';
     end
-    Output_tdi=fullfile(pathstr,[name SIFT_suffix '_' mrtrixParams.tdi_contrast '.nii']);
+    if mrtrixParams.do_DEC_tdi == true
+        Output_tdiDEC = fullfile(pathstr,[name SIFT_suffix '_' 'DEC' mrtrixParams.tdi_contrast '.nii.gz']);
+    end
+    Output_tdi=fullfile(pathstr,[name SIFT_suffix '_' mrtrixParams.tdi_contrast '.nii.gz']);
 end
 
 % Check/Load settings
@@ -72,10 +75,14 @@ if mrtrixParams.forceoverwrite==true
     force_option = '-force ';
 else force_option = '';
 end
+if mrtrixParams.doSIFT2
+    tck_weights = ['-tck_weights_in ' mrtrixParams.SIFT2_weights ' '];
+else tck_weights = '';
+end
 
-cat_options = [multitread_option, voxel_option, contrast_option, precise_option force_option];
+cat_options = [multitread_option, voxel_option, contrast_option, precise_option force_option tck_weights];
 if mrtrixParams.do_DEC_tdi==1
-    cat_options2 = [multitread_option, voxel_option, dec_option, contrast_option, precise_option force_option];
+    cat_options2 = [multitread_option, voxel_option, dec_option, contrast_option, precise_option force_option tck_weights];
     DEC_command = ['; tckmap ' cat_options2 Input_tck ' ' Output_tdiDEC];
 else DEC_command = '';
 end
