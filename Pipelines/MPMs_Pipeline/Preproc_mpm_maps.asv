@@ -1,4 +1,4 @@
-function [isDone,Subj_OutputFolder] = Preproc_mpm_maps(InputFolder,SubjID,LocalOutputFolder,ProtocolsFile,PipelineParmsConfigFile,ServerFolder)
+function Subj_OutputFolder = Preproc_mpm_maps(InputFolder,SubjID,LocalOutputFolder,ProtocolsFile,PipelineParmsConfigFile,ServerFolder)
 
 % This function computes the Multiparametric Maps (MPMs)(R2*, R1, MT, PD) and brain segmentation in different tissue maps.All computation was programmed based on the LREN database structure. The
 % MPMs are calculated locally in 'OutputFolder' and finally copied to 'ServerFolder'.
@@ -7,15 +7,12 @@ function [isDone,Subj_OutputFolder] = Preproc_mpm_maps(InputFolder,SubjID,LocalO
 %  SubjID: Identifier of the subject (Subject's Folder name). 
 %  LocalOutputFolder: Local Folder where all MPMs belonging to several subjects will be saved.
 %  ProtocolsFile: File that provides the list of protocols needed for MPMs computation. (for instance: Protocols_definition.txt) 
-%  PipelineParmsConfigFile : File defining parameters of the MPM pipeline: 
-%                               MPM_Template: Template used for segmentation step; 
-%                               doUNICORT: Flag variable to indicate if UNICORT approach is used to compute the MPMs.
+%  MPM_Template: Template used for segmentation step.
 %  ServerFolder: Folder located in the Server, where the final MPMs files will be saved where all users have access.
-%  
+%  doUNICORT: Flag variable to indicate if UNICORT approach is used to compute the MPMs.
 %% Output Parameters:
 %  Subj_OutputFolder: Subject Folder located and defined by OutputFolder input variable (see Input Parameters).
-%   isDone : isDone = 1 : Subject finished without errors.
-%            isDone = 0 : Subject finished with errors. 
+%  SubjOutMPMFolder: Folder where the MPMs finally are saved in the Local Folder.
 %
 %% Anne Ruef, Lester Melie-Garcia
 % LREN, CHUV. 
@@ -23,129 +20,126 @@ function [isDone,Subj_OutputFolder] = Preproc_mpm_maps(InputFolder,SubjID,LocalO
 % Modified: January 28th, 2016
 % This is an improvement of 'Preproc_mpm_maps_extended_fixed.m' 
 
-try
-    s = which('spm.m');
-    if isempty(s)
-        disp('Please add SPM toolbox in the path .... ');
-        return;
-    end;
-    if ~strcmp(InputFolder(end),filesep)
-        InputFolder = [InputFolder,filesep];
-    end;
-    SubjectFolder = [InputFolder,SubjID,filesep];
-    
-    if ~strcmp(LocalOutputFolder(end),filesep)
-        LocalOutputFolder = [LocalOutputFolder,filesep];
-    end;
-    
-    [MPM_Template,doUNICORT] = Read_Preproc_mpm_maps_config(PipelineParmsConfigFile); % Reading parameters needed for MPMs computation.
+s = which('spm.m');
+if isempty(s)
+    disp('Please add SPM toolbox in the path .... ');
+    return;
+end;
+if ~strcmp(InputFolder(end),filesep)
+    InputFolder = [InputFolder,filesep];
+end;
+SubjectFolder = [InputFolder,SubjID,filesep];
 
-    spm_jobman('initcfg');
-    
-    if ~exist(LocalOutputFolder,'dir')
-        mkdir(LocalOutputFolder);
-    end;
-    if ~exist(ProtocolsFile,'file')
-        disp('Protocol names file does not exist ! Please specify ...');
-        return;
-    end;
-    if ~exist('doUNICORT','var')
-        doUNICORT =  false;
-    end;
-    %% Checking if subject have valid MPMs folders ..
-    RawSession_Folders = getListofFolders(SubjectFolder);
-    Ns_t = length(RawSession_Folders);  % Number of sessions ...
-    Nprot_t = zeros(Ns_t,1);
-    for i=1:Ns_t
-        Nprot_t(i) = get_valid_MPM_Protocols(ProtocolsFile,[SubjectFolder,RawSession_Folders{i},filesep],doUNICORT); % Number of protocols
-    end;
-    
-    Niter = 8; % Number of iterations for commissure adjustment ...
-    Images2CorrectCenterExt = {'_A.nii';'_MT.nii';'_MTR.nii';'_MTR_synt.nii';'_MTRdiff.nii';'_MTw.nii';'_PDw.nii';'_R1.nii';'_R1_m.nii';'_R2s.nii';'_T1w.nii';'_MTforA.nii'};
-    %%
-    if sum(Nprot_t)>0
-        Subj_OutputFolder = [LocalOutputFolder,SubjID,filesep];
-        mkdir(Subj_OutputFolder);
-        copyfile(SubjectFolder,Subj_OutputFolder);
-        Session_Folder = getListofFolders(Subj_OutputFolder);
-        Ns = length(Session_Folder);  % Number of sessions ...
-        Ini_List_Files = getAllFiles(Subj_OutputFolder);
-        for i=1:Ns
-            DataFolder = [Subj_OutputFolder,Session_Folder{i},filesep];
-            [Nprot,B0_p,B1_p,MT_p,PD_p,T1_p] = get_valid_MPM_Protocols(ProtocolsFile,DataFolder,doUNICORT); % Valid Protocols and Number of protocols
-            for j=1:Nprot  % Number of protocols, i.e : 1.0 mm^3, and 1.5 mm^3
-                Nrep = get_Number_Rep_ext(MT_p{j},PD_p{j},T1_p{j},DataFolder); % Number of repetitions for each protocol
-                for k=1:Nrep
+if ~strcmp(LocalOutputFolder(end),filesep)
+    LocalOutputFolder = [LocalOutputFolder,filesep];
+end;
+[MPM_Template,doUNICORT] = Read_Preproc_mpm_maps_config(PipelineConfigFile);
+% if ~exist(LocalOutputFolder,'dir')
+%     Subj_OutputFolder = [LocalOutputFolder,SubjID,filesep];
+%     mkdir(Subj_OutputFolder);    
+% end;
+spm_jobman('initcfg');
+
+if ~exist(LocalOutputFolder,'dir')    
+    mkdir(LocalOutputFolder);    
+end;
+if ~exist(ProtocolsFile,'file')    
+    disp('Protocol names file does not exist ! Please specify ...'); 
+    return;
+end;
+if ~exist('doUNICORT','var')
+    doUNICORT =  false;
+end;
+%% Checking if subject have valid MPMs folders ..
+RawSession_Folders = getListofFolders(SubjectFolder);
+Ns_t = length(RawSession_Folders);  % Number of sessions ...
+Nprot_t = zeros(Ns_t,1);
+for i=1:Ns_t
+    Nprot_t(i) = get_valid_MPM_Protocols(ProtocolsFile,[SubjectFolder,RawSession_Folders{i},filesep],doUNICORT); % Number of protocols
+end;
+
+Niter = 8; % Number of iterations for commissure adjustment ...
+Images2CorrectCenterExt = {'_A.nii';'_MT.nii';'_MTR.nii';'_MTR_synt.nii';'_MTRdiff.nii';'_MTw.nii';'_PDw.nii';'_R1.nii';'_R1_m.nii';'_R2s.nii';'_T1w.nii';'_MTforA.nii'};
+%%
+if sum(Nprot_t)>0    
+    Subj_OutputFolder = [LocalOutputFolder,SubjID,filesep];
+    mkdir(Subj_OutputFolder);
+    copyfile(SubjectFolder,Subj_OutputFolder);
+    Session_Folder = getListofFolders(Subj_OutputFolder);
+    Ns = length(Session_Folder);  % Number of sessions ...
+    Ini_List_Files = getAllFiles(Subj_OutputFolder);
+    for i=1:Ns
+        DataFolder = [Subj_OutputFolder,Session_Folder{i},filesep];
+        [Nprot,B0_p,B1_p,MT_p,PD_p,T1_p] = get_valid_MPM_Protocols(ProtocolsFile,DataFolder,doUNICORT); % Valid Protocols and Number of protocols
+        for j=1:Nprot  % Number of protocols, i.e : 1.0 mm^3, and 1.5 mm^3
+            Nrep = get_Number_Rep_ext(MT_p{j},PD_p{j},T1_p{j},DataFolder); % Number of repetitions for each protocol
+            for k=1:Nrep
+                if ~doUNICORT
+                    %%  Field mapping images ...
+                    Folder_List = getListofFolders([DataFolder,B0_p{j}],'yes'); % gives back sorted Folder list
+                    InSubDir01 = [DataFolder,B0_p{j},filesep,Folder_List{2*k-1}];
+                    InSubDir02 = [DataFolder,B0_p{j},filesep,Folder_List{2*k}];
+                    Files01 = spm_select('FPListRec',InSubDir01,'.*');
+                    Files02 = spm_select('FPListRec',InSubDir02,'.*');
+                    b0_Images = char(Files01,Files02);
+                    
+                    %%  B1 images ...
+                    Folder_List = getListofFolders([DataFolder,B1_p{j}],'yes');  % gives back sorted Folder list
+                    InSubDir01 = [DataFolder,B1_p{j},filesep,Folder_List{k}];
+                    b1_Images = cellstr(spm_select('FPListRec',InSubDir01,'.*'));
+                else
+                    b0_Images = ''; b1_Images = '';
+                end;
+                %%  MT images ...
+                Folder_List = getListofFolders([DataFolder,MT_p{j}],'yes');  % gives back sorted Folder list
+                MTSubDir = [DataFolder,MT_p{j},filesep,Folder_List{2*k-1}];
+                MT_Images = cellstr(spm_select('FPListRec',MTSubDir,'.*'));
+                
+                %%  PD images ...
+                Folder_List = getListofFolders([DataFolder,PD_p{j}],'yes');  % gives back sorted Folder list
+                InSubDir01 = [DataFolder,PD_p{j},filesep,Folder_List{2*k-1}];
+                PD_Images = cellstr(spm_select('FPListRec',InSubDir01,'.*'));
+                
+                %%  T1 images ...
+                Folder_List = getListofFolders([DataFolder,T1_p{j}],'yes');  % gives back sorted Folder list
+                InSubDir01 = [DataFolder,T1_p{j},filesep,Folder_List{2*k-1}];
+                T1_Images = cellstr(spm_select('FPListRec',InSubDir01,'.*'));
+                
+                %%  Calculating MPMs  ...
+                doMPM = ~(isempty(MT_Images)||isempty(PD_Images)||isempty(T1_Images)); % Checking that we dont have empty folders to compute MPMs.
+                if doMPM
+                    MPMs_computation(MT_Images,PD_Images,T1_Images,doUNICORT,b0_Images,b1_Images);
+                    
+                    %% Masking  MT map
+                    MaskImage =  pickfiles(MTSubDir,'_PDw.nii');
                     if ~doUNICORT
-                        %%  Field mapping images ...
-                        Folder_List = getListofFolders([DataFolder,B0_p{j}],'yes'); % gives back sorted Folder list
-                        InSubDir01 = [DataFolder,B0_p{j},filesep,Folder_List{2*k-1}];
-                        InSubDir02 = [DataFolder,B0_p{j},filesep,Folder_List{2*k}];
-                        Files01 = spm_select('FPListRec',InSubDir01,'.*');
-                        Files02 = spm_select('FPListRec',InSubDir02,'.*');
-                        b0_Images = char(Files01,Files02);
-                        
-                        %%  B1 images ...
-                        Folder_List = getListofFolders([DataFolder,B1_p{j}],'yes');  % gives back sorted Folder list
-                        InSubDir01 = [DataFolder,B1_p{j},filesep,Folder_List{k}];
-                        b1_Images = cellstr(spm_select('FPListRec',InSubDir01,'.*'));
+                        Images2Mask =  pickfiles(MTSubDir,'',{'_MT.nii';'_R1.nii'});
                     else
-                        b0_Images = ''; b1_Images = '';
+                        % For unicort case ...
+                        [MaskFilePath,MaskFileName,MaskFileExt] = fileparts(MaskImage);
+                        Images2Mask_MT = [MaskFilePath,filesep,MaskFileName(1:end-3),'MT',MaskFileExt];
+                        Images2Mask_R1 = [MaskFilePath,filesep,'mh',MaskFileName(1:end-3),'R1',MaskFileExt];
+                        Images2Mask = char(Images2Mask_MT,Images2Mask_R1);
                     end;
-                    %%  MT images ...
-                    Folder_List = getListofFolders([DataFolder,MT_p{j}],'yes');  % gives back sorted Folder list
-                    MTSubDir = [DataFolder,MT_p{j},filesep,Folder_List{2*k-1}];
-                    MT_Images = cellstr(spm_select('FPListRec',MTSubDir,'.*'));
-                    
-                    %%  PD images ...
-                    Folder_List = getListofFolders([DataFolder,PD_p{j}],'yes');  % gives back sorted Folder list
-                    InSubDir01 = [DataFolder,PD_p{j},filesep,Folder_List{2*k-1}];
-                    PD_Images = cellstr(spm_select('FPListRec',InSubDir01,'.*'));
-                    
-                    %%  T1 images ...
-                    Folder_List = getListofFolders([DataFolder,T1_p{j}],'yes');  % gives back sorted Folder list
-                    InSubDir01 = [DataFolder,T1_p{j},filesep,Folder_List{2*k-1}];
-                    T1_Images = cellstr(spm_select('FPListRec',InSubDir01,'.*'));
-                    
-                    %%  Calculating MPMs  ...
-                    doMPM = ~(isempty(MT_Images)||isempty(PD_Images)||isempty(T1_Images)); % Checking that we dont have empty folders to compute MPMs.
-                    if doMPM
-                        MPMs_computation(MT_Images,PD_Images,T1_Images,doUNICORT,b0_Images,b1_Images);
-                        
-                        %% Masking  MT map
-                        MaskImage =  pickfiles(MTSubDir,'_PDw.nii');
-                        if ~doUNICORT
-                            Images2Mask =  pickfiles(MTSubDir,'',{'_MT.nii';'_R1.nii'});
-                        else
-                            % For unicort case ...
-                            [MaskFilePath,MaskFileName,MaskFileExt] = fileparts(MaskImage);
-                            Images2Mask_MT = [MaskFilePath,filesep,MaskFileName(1:end-3),'MT',MaskFileExt];
-                            Images2Mask_R1 = [MaskFilePath,filesep,'mh',MaskFileName(1:end-3),'R1',MaskFileExt];
-                            Images2Mask = char(Images2Mask_MT,Images2Mask_R1);
-                        end;
-                        thresh_mask = 100; suffix = '_m';
-                        MaskedImages = Mask_images(Images2Mask,MaskImage,thresh_mask,suffix);
-                        MT_MaskedImage = MaskedImages(1);
-                        comm_adjust(1,MT_MaskedImage{1},'T1',MT_MaskedImage{1},Niter,0); % Commissure adjustment to find a rigth image center and have good segmentation.
-                        CorrectingCenters(MTSubDir,MT_MaskedImage{1},Images2CorrectCenterExt);  % Correcting new center to the rest of the images.
-                        %% Segmenting MT masked image ...
-                        MPMs_Segmentation(MT_MaskedImage{1},MPM_Template);
-                    end;
+                    thresh_mask = 100; suffix = '_m';
+                    MaskedImages = Mask_images(Images2Mask,MaskImage,thresh_mask,suffix);
+                    MT_MaskedImage = MaskedImages(1);
+                    comm_adjust(1,MT_MaskedImage{1},'T1',MT_MaskedImage{1},Niter,0); % Commissure adjustment to find a rigth image center and have good segmentation.
+                    CorrectingCenters(MTSubDir,MT_MaskedImage{1},Images2CorrectCenterExt);  % Correcting new center to the rest of the images.
+                    %% Segmenting MT masked image ...
+                    MPMs_Segmentation(MT_MaskedImage{1},MPM_Template);
                 end;
             end;
         end;
-        %% Reorganizing the Outputs ...
-        %SubjOutMPMFolder = copyFile2Output(GlobalMPMFolder,ProtocolsFile,Subj_OutputFolder,SubjID,doUNICORT);
-        Out_List_Files = getAllFiles(Subj_OutputFolder);
-        Reorganize_MPM_Files(Subj_OutputFolder,Ini_List_Files,Out_List_Files);
-        
-        %% Copying Data to server ...
-        copy_data2Server(Subj_OutputFolder,LocalOutputFolder,ServerFolder,SubjID);      % if ServerFolder variable is empty,  Nifti data wont be copy to the server
-        %copy_data2Server(SubjOutMPMFolder,GlobalMPMFolder,ServerFolder,SubjID);        % if ServerFolder variable is empty,  Nifti data wont be copy to the server
     end;
-    isDone = 1;
-catch ME
-    isDone = 0;
+    %% Reorganizing the Outputs ...
+    %SubjOutMPMFolder = copyFile2Output(GlobalMPMFolder,ProtocolsFile,Subj_OutputFolder,SubjID,doUNICORT);
+    Out_List_Files = getAllFiles(Subj_OutputFolder);
+    Reorganize_MPM_Files(Subj_OutputFolder,Ini_List_Files,Out_List_Files);
+    
+    %% Copying Data to server ...
+    copy_data2Server(Subj_OutputFolder,LocalOutputFolder,ServerFolder,SubjID);      % if ServerFolder variable is empty,  Nifti data wont be copy to the server
+    %copy_data2Server(SubjOutMPMFolder,GlobalMPMFolder,ServerFolder,SubjID);        % if ServerFolder variable is empty,  Nifti data wont be copy to the server
 end;
 end
 

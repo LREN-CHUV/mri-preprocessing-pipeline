@@ -16,5 +16,5 @@ mkdir(NiFti_Server_OutputFolder,SubjID);
 copyfile(Subj_NiiFolder,[NiFti_Server_OutputFolder,SubjID]);
 %Preproc_mpm_maps(Subj_NiiFolder,SubjID,OutputFolder,GlobalMPMFolder,ProtocolsFile,MPM_Template,ServerFolder,doUNICORT);
 Preproc_mpm_maps(NiFti_OutputFolder,SubjID,OutputFolder,ProtocolsFile,PipelineParmsConfigFile,ServerFolder);
-
+Preproc_mpm_maps(InputFolder,SubjID,LocalOutputFolder,ProtocolsFile,PipelineParmsConfigFile,ServerFolder)
 end

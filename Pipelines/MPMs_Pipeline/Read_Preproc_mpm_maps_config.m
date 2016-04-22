@@ -1,4 +1,4 @@
-function [DataFolderName,ProtocolsFile,MPM_OutputFolder,GlobalMPMFolder,MPM_Template,ServerFolder,doUNICORT] = Read_Preproc_mpm_maps_config(PipelineConfigFile) %#ok<*STOUT>
+function [MPM_Template,doUNICORT] = Read_Preproc_mpm_maps_config(PipelineConfigFile) %#ok<*STOUT>
 
 %% Lester Melie-Garcia
 % LREN, CHUV. 
@@ -22,12 +22,7 @@ for i=1:length(ComandLines)
     eval(ComandLines{i});    
 end;
 
-DataFolderName = DataFolderName; %#ok
-ProtocolsFile = ProtocolsFile; %#ok
-MPM_OutputFolder = MPM_OutputFolder; %#ok 
-GlobalMPMFolder = GlobalMPMFolder; %#ok
 MPM_Template = MPM_Template; %#ok
-ServerFolder = ServerFolder; %#ok
 doUNICORT = doUNICORT; %#ok
 
 end

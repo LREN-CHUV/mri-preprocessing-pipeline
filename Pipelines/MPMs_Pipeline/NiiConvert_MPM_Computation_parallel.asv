@@ -35,14 +35,14 @@ Ns = length(SubjectFolders);  % Number of subjects ...
 %% For MPMs Computation Initializing ...
 
 if ~exist('PathsPipelineConfigFile','var')
-    PathsPipelineConfigFile = which('Preproc_mpm_maps_pipeline_config_paths.txt');
-    if isempty(PathsPipelineConfigFile)
+    PathsPipelineConfigFile = which('Preproc_mpm_maps_pipeline_config.txt');
+    if isempty(PipelineConfigFile)
         disp('pipeline config file does not exist ! Please specify ...');
         return;
     end;
 end;
 %[~,ProtocolsFile,MPM_OutputFolder,MPM_Template,ServerFolder,doUNICORT] = Read_Preproc_mpm_maps_config(PipelineConfigFile); %#ok<*STOUT>
-[~,ProtocolsFile,PipelineParmsConfigFile,MPM_OutputFolder,ServerFolder] = Read_Preproc_mpm_maps_paths(PathsPipelineConfigFile);
+[~,ProtocolsFile,PipelineParmsConfigFile,MPM_OutputFolder,MPM_Template,ServerFolder,doUNICORT] = Read_Preproc_mpm_maps_paths(PathsPipelineConfigFile);
 %%
 s = which('spm.m');
 if  ~isempty(s)
@@ -57,14 +57,14 @@ path_dependencies = {spm_path,pipeline_daemon_path}; %#ok
 
 %%
 jm = findResource('scheduler','type','local'); %#ok
-%NiiConvert_MPM_Computation(SubjectFolder,SubjID,NiFti_OutputFolder,NiFti_Server_OutputFolder,ProtocolsFile,PipelineParmsConfigFile,OutputFolder,ServerFolder)
+%NiiConvert_MPM_Computation(SubjectFolder,SubjID,NiFti_OutputFolder,ProtocolsFile,OutputFolder,GlobalMPMFolder,MPM_Template,ServerFolder,doUNICORT)
 PipelineFunction = 'NiiConvert_MPM_Computation';
 for i=1:Ns
     SubjID = SubjectFolders{i};
     JobID = ['job_',check_clean_IDs(SubjID)];
     SubjectFolder = Subj_IDs2Compute{i,2};
-    InputParametersF = horzcat({SubjectFolder},{SubjID},{NiFti_OutputFolder},{NiFti_Server_OutputFolder},{ProtocolsFile},{PipelineParmsConfigFile}, ...
-                               {MPM_OutputFolder},{ServerFolder}); %#ok
+    InputParametersF = horzcat({SubjectFolder},{SubjID},{NiFti_OutputFolder},{NiFti_Server_OutputFolder},{ProtocolsFile},{MPM_OutputFolder}, ...
+                               {GlobalMPMFolder},{MPM_Template},{ServerFolder},{doUNICORT}); %#ok
     NameField = 'Name'; %#ok
     PathDependenciesField = 'PathDependencies'; %#ok
     createJob_cmd = [JobID,' = createJob(jm,NameField,SubjID);']; % create Job command
