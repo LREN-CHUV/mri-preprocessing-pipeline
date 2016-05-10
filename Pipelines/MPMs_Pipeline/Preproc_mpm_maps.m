@@ -47,6 +47,7 @@ try
     end;
     if ~exist(ProtocolsFile,'file')
         disp('Protocol names file does not exist ! Please specify ...');
+        isDone = 0;
         return;
     end;
     if ~exist('doUNICORT','var')

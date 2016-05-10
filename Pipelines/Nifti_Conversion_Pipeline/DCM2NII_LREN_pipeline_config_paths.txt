@@ -1,0 +1,4 @@
+ServerDataFolder = '\\filearc\data\CRN\LREN\IRMMP16\prisma\2014\';
+ProtocolsFile = 'D:\Users DATA\Users\lester\Automatic_Computation_under_Organization\Protocols_definition.txt';
+NiFti_Local_OutputFolder = 'D:\Users DATA\Users\lester\ZZZ_Nifti_Data_MPMs\';
+NiFti_Server_OutputFolder = 'M:\CRN\LREN\SHARE\VBQ_Output_All\DataNifti_All';
