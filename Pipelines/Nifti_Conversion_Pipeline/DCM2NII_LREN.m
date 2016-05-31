@@ -34,6 +34,9 @@ try
     if ~strcmp(SubjectFolder(end),filesep)
         SubjectFolder = [SubjectFolder,filesep];
     end;
+
+    spm_jobman('initcfg');
+
     SubjectFolder = [SubjectFolder,SubjID,filesep];
     TempCovFolder = 'Nifti_temp';
     SessionFolders = getListofFolders(SubjectFolder);
