@@ -16,7 +16,7 @@ function success = NeuroMorphometric_pipeline(SubjID,InputDataFolder,LocalFolder
 % LREN, Lausanne
 % October 7th, 2015
 
-success = 0;
+success = -1;
 
 spm_jobman('initcfg');
 
@@ -48,6 +48,7 @@ Ini_List_Files = getAllFiles(Subj_OutputFolder);
 
 SessionFolders = getListofFolders(Subj_OutputFolder); % Number of sessions ...
 Nsess = length(SessionFolders);
+success = 0;
 for i=1:Nsess
     MT_Folders = get_valid_MT_Protocols(ProtocolsFile,[Subj_OutputFolder,SessionFolders{i},filesep]);
     for j=1:length(MT_Folders)
@@ -65,6 +66,7 @@ for i=1:Nsess
             save_vols_MPMs_globals2csv_plus_sigma(OutputVolumeFile,OutputAtlasFile,SubjectWorkingFolder,OutputCSVFile,c1ImageFileName,c2ImageFileName,c3ImageFileName,TableFormat);
             %save_vols_MPMs_globals2csv(OutputVolumeFile,OutputAtlasFile,SubjectWorkingFolder,OutputCSVFile,c1ImageFileName,c2ImageFileName,c3ImageFileName);
             %save_vols_MPMs2csv(OutputVolumeFile,OutputAtlasFile,SubjectWorkingFolder,OutputCSVFile);
+            success = success + 1;
         end;
     end;
 end;
@@ -80,8 +82,6 @@ if ~strcmpi(AtlasingOutputFolder,LocalFolder)
         copyfile(Subj_OutputFolder,SubjOutputServerFolder);
     end;
 end;
-
-success = 1;
 
 end
 

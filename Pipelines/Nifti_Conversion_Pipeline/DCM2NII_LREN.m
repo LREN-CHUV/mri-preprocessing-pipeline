@@ -13,8 +13,9 @@ function isDone = DCM2NII_LREN(SubjectFolder,SubjID,OutputFolder,NiFti_Server_Ou
 %
 %% Output Parameters:
 %  Subj_OutputFolder: Subject Output Folder where Nifti data will be saved locally.
-%   isDone : isDone = 1 : Subject finished without errors.
-%            isDone = 0 : Subject finished with errors. 
+%   isDone : isDone >= 1 : Subject finished without errors and n files where processed.
+%            isDone = 0 : Subject finished without errors but no processing was performed.
+%            isDone = -1 : Subject finished with errors.
 %
 %% Lester Melie-Garcia
 % LREN, CHUV. 
@@ -48,6 +49,7 @@ try
     PD_protocol = cellstr(get_protocol_names(ProtocolsFile,'__Dicom2Nifti__','[PD]'));
     T1_protocol = cellstr(get_protocol_names(ProtocolsFile,'__Dicom2Nifti__','[T1]'));
     fMRI_dropout_protocol = cellstr(get_protocol_names(ProtocolsFile,'__Dicom2Nifti__','[fMRI_dropout]'));
+    nb_processed_files = 0;
     for j=1:Ns
         Session = SessionFolders{j};
         if ~isempty(str2num(Session))  %#ok  % Just fixing the name padding a zero as prefix
@@ -97,6 +99,7 @@ try
                             filehdr = spm_dicom_headers(dicom_files(1,:));
                             matlabbatch{1}.spm.util.import.dicom.data = cellstr(dicom_files);  % Input Folder to be converted.
                             spm_jobman('run',matlabbatch);
+                            nb_processed_files = nb_processed_files + 1;
                             OrgOutputFolder = Reorg_Nifti(FolderNames{i},OutputSessionFolder,TempOutputSessionFolder,RepetFolders{k});
                             if isfield(filehdr{1}, 'CSASeriesHeaderInfo')&&(~strcmpi(which_prot,'other'))
                                 VBQ_mosaic2nii_correction(InSubDir,OrgOutputFolder);
@@ -107,6 +110,7 @@ try
                             dicom_files = spm_select('FPListRec',InSubDir,'.*');
                             matlabbatch{1}.spm.util.import.dicom.data = cellstr(dicom_files); % Input Folder to be converted.
                             spm_jobman('run',matlabbatch);
+                            nb_processed_files = nb_processed_files + 1;
                             Reorg_Nifti(FolderNames{i},OutputSessionFolder,TempOutputSessionFolder,RepetFolders{k});
                     end;
                 end;
@@ -119,9 +123,10 @@ try
     end;
     mkdir(NiFti_Server_OutputFolder,SubjID);
     copyfile(Subj_OutputFolder,[NiFti_Server_OutputFolder,SubjID]);
-    isDone = 1;
+    isDone = nb_processed_files;
 catch ME  %#ok
-    isDone = 0;
+    warning(ME);
+    isDone = -1;
 end;
 end
 

@@ -14,8 +14,9 @@ function [isDone,Subj_OutputFolder] = Preproc_mpm_maps(InputFolder,SubjID,LocalO
 %  
 %% Output Parameters:
 %  Subj_OutputFolder: Subject Folder located and defined by OutputFolder input variable (see Input Parameters).
-%   isDone : isDone = 1 : Subject finished without errors.
-%            isDone = 0 : Subject finished with errors. 
+%   isDone : isDone >= 1 : Subject finished without errors.
+%            isDone = 0 :  No processing perform on that subject.
+%            isDone = -1 : Subject finished with errors.
 %
 %% Anne Ruef, Lester Melie-Garcia
 % LREN, CHUV. 
@@ -64,6 +65,7 @@ try
     Niter = 8; % Number of iterations for commissure adjustment ...
     Images2CorrectCenterExt = {'_A.nii';'_MT.nii';'_MTR.nii';'_MTR_synt.nii';'_MTRdiff.nii';'_MTw.nii';'_PDw.nii';'_R1.nii';'_R1_m.nii';'_R2s.nii';'_T1w.nii';'_MTforA.nii'};
     %%
+    Ns = 0;
     if sum(Nprot_t)>0
         Subj_OutputFolder = [LocalOutputFolder,SubjID,filesep];
         mkdir(Subj_OutputFolder);
@@ -144,9 +146,10 @@ try
         copy_data2Server(Subj_OutputFolder,LocalOutputFolder,ServerFolder,SubjID);      % if ServerFolder variable is empty,  Nifti data wont be copy to the server
         %copy_data2Server(SubjOutMPMFolder,GlobalMPMFolder,ServerFolder,SubjID);        % if ServerFolder variable is empty,  Nifti data wont be copy to the server
     end;
-    isDone = 1;
+    isDone = Ns;
 catch ME
-    isDone = 0;
+    warning(ME);
+    isDone = -1;
 end;
 end
 
