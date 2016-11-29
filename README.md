@@ -20,11 +20,11 @@ to merge code from master branch to deploy branch, then
 
 ```
   git commit -S -m "Signoff"
-  git tag 1.0
+  git tag -s 1.0
 ```
 
 to add a signoff and allow deployment of the pipeline to the Data Factories.
-It is best practice to tag the version ready for deployment with a release number.
+It is best practice to tag with signing the version ready for deployment with a release number.
 
 ## License
 
