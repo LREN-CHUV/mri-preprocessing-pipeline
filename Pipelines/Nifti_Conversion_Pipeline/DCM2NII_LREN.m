@@ -1,7 +1,7 @@
 function isDone = DCM2NII_LREN(SubjectFolder,SubjID,OutputFolder,NiFti_Server_OutputFolder,ProtocolsFile)
 
 % This function convert the dicom files to Nifti format using
-% the SPM tools and dcm2nii tool developed by Chris Rorden 
+% the SPM tools and dcm2nii tool developed by Chris Rorden
 % Webpage: http://www.mccauslandcenter.sc.edu/mricro/mricron/dcm2nii.html
 %
 %% Input Parameters
@@ -18,7 +18,7 @@ function isDone = DCM2NII_LREN(SubjectFolder,SubjID,OutputFolder,NiFti_Server_Ou
 %            isDone = -1 : Subject finished with errors.
 %
 %% Lester Melie-Garcia
-% LREN, CHUV. 
+% LREN, CHUV.
 % Lausanne, May 21st, 2014
 
 try
@@ -128,8 +128,12 @@ try
     copyfile(Subj_OutputFolder,[NiFti_Server_OutputFolder,SubjID]);
     isDone = nb_processed_files;
 catch ME  %#ok
-    warning(ME);
-    isDone = -1;
+  warning(ME.message);
+   for printStack = 1:length(ME.stack)
+       disp(ME.stack(printStack).file);
+       disp(ME.stack(printStack).line);
+   end
+   isDone = -1;
 end;
 end
 
@@ -138,11 +142,11 @@ end
 function EchoCombining(DataFolder,fMRI_SequenceName)
 
 if ~strcmp(DataFolder(end),filesep)
-    DataFolder = [DataFolder,filesep];    
+    DataFolder = [DataFolder,filesep];
 end;
 InputFolder = [DataFolder,fMRI_SequenceName,filesep];
 
-RepetFolders = getListofFolders(InputFolder,'yes'); % Getting the list of Folders organized ... 
+RepetFolders = getListofFolders(InputFolder,'yes'); % Getting the list of Folders organized ...
 Nf = floor(length(RepetFolders)/3);
 
 for i=1:Nf
@@ -241,15 +245,11 @@ elseif ismember(FolderName,MT_protocol)
 elseif ismember(FolderName,PD_protocol)
     which_prot = 'PD';
 elseif ismember(FolderName,T1_protocol)
-    which_prot = 'T1';  
+    which_prot = 'T1';
 elseif ismember(FolderName,fMRI_dropout_protocol)
-    which_prot = 'fMRI_dropout'; 
+    which_prot = 'fMRI_dropout';
 else
     which_prot = 'other';
 end;
 
 end
-
-
-
-
