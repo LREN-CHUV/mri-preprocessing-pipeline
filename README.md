@@ -16,7 +16,8 @@ Use
    git merge --no-ff
 ```
 
-to merge code from master branch to deploy branch, then
+to merge code from master branch to deploy branch.
+Add a signoff in file signoff.md, then
 
 ```
   git commit -S -m "Signoff"
