@@ -13,7 +13,7 @@ Use
 
 ```
    git checkout deploy
-   git merge --no-ff
+   git merge --no-ff master
 ```
 
 to merge code from master branch to deploy branch.
