@@ -1,0 +1,2 @@
+InputFolder = '/Users/Zsuzsanna/Desktop/testPPMI/inputData';
+OutputFolder = '/Users/Zsuzsanna/Desktop/testPPMI/output';

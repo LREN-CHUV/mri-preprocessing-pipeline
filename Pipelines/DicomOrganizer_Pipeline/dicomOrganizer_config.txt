@@ -1,0 +1,1 @@
+DataStructure = 'PatientID:StudyID:SeriesDescription:SeriesDate';
