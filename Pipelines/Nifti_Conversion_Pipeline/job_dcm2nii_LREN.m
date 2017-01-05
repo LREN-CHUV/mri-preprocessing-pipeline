@@ -36,14 +36,14 @@ if exist('datatype','var')
     if isempty(datatype)
         datatype = 'DTI';
     end;
-else        
+else
     datatype = 'DTI';
 end;
-if ~isempty(dcm2niiProgram)    
+if ~isempty(dcm2niiProgram)
     if ~strcmpi(OutputFolder(end),filesep)
         OutputFolder=[OutputFolder,filesep];
     end;
-    %dcm2niiSetup = get_dcm2niiDefaults(InputDataFolder);  OutputFolder 
+    %dcm2niiSetup = get_dcm2niiDefaults(InputDataFolder);  OutputFolder
     for j=1:size(InputDataFolder,1)
         dcm2niiSetup = get_dcm2niiDefaults(OutputFolder);
         switch datatype
@@ -66,10 +66,10 @@ if ~isempty(dcm2niiProgram)
         if isParRec
             InputDataFolder = '';
             for i=1:size(ParRec1,1)
-                InputDataFolder = [InputDataFolder(j,:),' ',ParRec1(i,:)]; 
+                InputDataFolder = [InputDataFolder(j,:),' ',ParRec1(i,:)];
             end;
             for i=1:size(ParRec2,1)
-                InputDataFolder = [InputDataFolder(j,:),' ',ParRec2(i,:)]; 
+                InputDataFolder = [InputDataFolder(j,:),' ',ParRec2(i,:)];
             end;
         end;
         InputDataDir = deblank(InputDataFolder(j,:));
@@ -79,6 +79,13 @@ if ~isempty(dcm2niiProgram)
         dcm2niiCommand=['"',dcm2niiProgram,'"',' -b ','"',Dcm2niiIniFile,'"',' -o ','"',OutputFolder,'"',' ','"',InputDataDir,'"']; %FileListCmd];
         system(dcm2niiCommand);
         delete(Dcm2niiIniFile);
+        toDel_o = dir(fullfile(OutputFolder, strcat('o*.nii')));  %remove extra output images if exists
+        toDel_co = dir(fullfile(OutputFolder, strcat('co*.nii'))); %remove extra output images if exists 
+        toDel = [toDel_o; toDel_co];
+        files2Delete = {toDel.name}';
+        for del_files = 1:size(files2Delete)
+            delete(strcat(OutputFolder,files2Delete{del_files}));
+        end
     end;
 else
     disp('Program dcm2nii not defined in the path ...');
