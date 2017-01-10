@@ -1,4 +1,6 @@
-function selectT1(InputFolder,OutputFolder,SubjectID,ProtocolsFile)
+function success = selectT1(InputFolder,OutputFolder,SubjectID,ProtocolsFile)
+
+success = -1;
 
 %% output
 if  ~exist(OutputFolder,'dir')
@@ -31,6 +33,9 @@ for sf = 1:Ns
         end
     end
 end
+
+success = 1;
+
 end
 
 
