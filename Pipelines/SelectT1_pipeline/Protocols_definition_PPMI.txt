@@ -1,0 +1,366 @@
+__Dicom2Nifti__
+[fieldmap]
+gre_field_mapping_for1mmMPM
+gre_field_mapping_for1pt5mmMPM
+gre_field_mapping_1acq_rl
+Field_mapping
+Field_mapping
+gre_field_mapping_1acq_rl_64ch
+gre_field_mapping_1acq_rl_64ch
+gre_field_mapping_1acq_rl
+[B1]
+al_B1mapping_v2d_for1mmMPM
+al_B1mapping_v2d_for1pt5mmMPM
+al_B1mapping_v2d
+al_B1mapping
+al_B1mapping
+al_B1mapping_v2d
+al_B1mapping_v2d
+al_B1mapping_v2d
+[MT]
+mt_al_mtflash3d_v2l_1mm
+mt_al_mtflash3d_v2l_1pt5mm
+mt_al_mtflash3d_v2l_1mm
+MT_Optimized
+mt_nw_mtflash3d
+mt_al_mtflash3d_v2l_1pt5mm
+mt_al_mtflash3d_v2l_1mm
+mt_al_mtflash3d_v2l_xpace_800um
+[PD]
+pd_al_mtflash3d_v2l_1mm
+pd_al_mtflash3d_v2l_1pt5mm
+pd_al_mtflash3d_v2l_1mm
+PD_weighted
+pd_nw_mtflash3d
+pd_al_mtflash3d_v2l_1pt5mm
+pd_al_mtflash3d_v2l_1mm
+pd_al_mtflash3d_v2l_xpace_800um_30echoes
+[T1]
+3 plane
+3D SAG
+AX T1
+AX T1 FLAIR
+AX T1 SE C
+AXIAL T1 3D MPRAGE
+Ax T1 FLAIR
+CORFLAIRr
+Cor FLAIR TI_2800ms
+FSPGR 3D SAG
+MPRAGE
+MPRAGE 2 ADNI
+MPRAGE ADNI
+MPRAGE GRAPPA
+MPRAGE GRAPPA 2
+MPRAGE GRAPPA2
+MPRAGE GRAPPA2adni
+MPRAGE GRAPPA_ND
+MPRAGE Repeat
+MPRAGE SAG
+MPRAGE T1 SAG
+MPRAGE w GRAPPA
+MPRAGE w GRAPPA 2
+MPRAGE_GRAPPA
+MPRAGE_GRAPPA_ADNI
+MPRAGEadni
+SAG 3D FSPGR BRAVO STRAIGHT
+SAG 3D SPGR
+SAG 3D T1
+SAG FSPGR 3D
+SAG FSPGR BRAVO
+SAG MPRAGE GRAPPA
+SAG MPRAGE GRAPPA2-NEW2016
+SAG MPRAGE GRAPPA_ND
+SAG SPGR
+SAG SPGR 3D
+SAG T1 3D FSPGR
+SAG T1 3D FSPGR 3RD REPEAT
+SAG T1 3D MPRAGE
+SAG T1 3DMPRAGE
+SAG T1 MPRAGE
+STRUC BRAVO SAG3D ARC
+STRUC T2FLAIR AX
+Sag MPRAGE GRAPPA
+Sag MPRAGE GRAPPA_ND
+Sag T1
+T1
+T1 REPEAT
+T1 Repeat
+T1W_3D_FFE AX
+axial spgr
+sT1W_3D_FFE
+sT1W_3D_ISO
+sT1W_3D_TFE
+sT2WPD_TSE
+sag
+sag 3D FSPGR BRAVO straight
+sag mprage
+t1_mpr_ns_sag_p2_iso
+tra_T1_MPRAGE
+[diffusion]
+ep2d_diff_DTI_2mm_30dirs_64ch
+cmrr_mbep2d_diff_165dirs_MB3                            
+ep2d_bold_qa                                            
+ep2d_diff_DTI_0p9mm_mon_61dirs_64ch                     
+ep2d_diff_DTI_1mm_mon_61dirs_64ch                       
+ep2d_diff_DTI_1p0mm_mon_61dirs_64ch                     
+ep2d_diff_DTI_1p0mm_mon_61dirs_64ch_blipup              
+ep2d_diff_DTI_1p2mm_mon_61dirs_64ch_blipup              
+ep2d_diff_DTI_1pt3mm_mon_30dirs                         
+ep2d_diff_DTI_1pt3mm_mon_30dirs_20ch                    
+ep2d_diff_DTI_1pt8mm_mon_30dirs                         
+ep2d_diff_DTI_1pt8mm_mon_30dirs_20ch                    
+ep2d_diff_DTI_2mm_mon_30dirs                            
+ep2d_diff_DTI_2mm_mon_30dirs_20ch                       
+ep2d_diff_HARDI_1pt8mm_mon_61dirs_b2000                 
+ep2d_diff_HARDI_1pt8mm_mon_61dirs_b2000_20ch            
+ep2d_diff_HARDI_2mm_mon_61dirs_b2500                    
+ep2d_diff_HARDI_2mm_mon_61dirs_b2500_20ch               
+ep2d_diff_HARDI_2pt2mm_mon_61dirs_b3000                 
+ep2d_diff_HARDI_2pt2mm_mon_61dirs_b3000_20ch            
+ep2d_diff_NODDI_2mm_64ch                                
+ep2d_diff_NODDI_2mm_mon_101dirs_b2300_64ch_v1           
+ep2d_diff_NODDI_2mm_mon_101dirs_b2300_64ch_v3           
+ep2d_diff_NODDI_2mm_mon_101dirs_b2300_64ch_v6           
+ep2d_diff_NODDI_2mm_mon_101dirs_b2800_64ch              
+ep2d_diff_NODDI_2mm_mon_101dirs_b2800_64ch_v1           
+ep2d_diff_NODDI_2mm_mon_101dirs_b2800_64ch_v2           
+ep2d_diff_NODDI_64ch_2mm_101dirs_bmax2000               
+ep2d_diff_NODDI_64ch_2mm_101dirs_bmax2000_interleaved   
+ep2d_diff_NODDI_64ch_2mm_101dirs_bmax2300               
+ep2d_diff_NODDI_64ch_2mm_bmax2000_interleaved           
+ep2d_diff_NODDI_64ch_2pt4mm_101dirs_bmax2000            
+ep2d_diff_NODDI_64ch_2pt4mm_101dirs_bmax2000_interleaved
+ep2d_diff_NODDI_64ch_2pt4mm_bmax2000_interleaved        
+ep2d_diff_mddw_1pt3mm_monopolar                         
+ep2d_diff_mddw_1pt7mm_monopolar                         
+ep2d_diff_wip603_lr
+MB1GRAPPA1
+MB1GRAPPA1_SIGNAL
+MB2GRAPPA1
+MB2GRAPPA1_SIGNAL
+MB2GRAPPA2
+MB2GRAPPA2_SIGNAL
+MB3GRAPPA1
+MB3GRAPPA1_SIGNAL
+MB3GRAPPA2
+MB3GRAPPA2_SIGNAL
+MB4GRAPPA1
+MB4GRAPPA1_SIGNAL
+MB4GRAPPA2
+MB4GRAPPA2_SIGNAL
+ep2d_diff_NODDI_MB2_2pt2mm
+ep2d_diff_NODDI_2pt2mm_64ch
+[fMRI_dropout]
+al_mepi2d_3mm_dropout
+__DWI__
+[diffusion]
+ep2d_diff_NODDI_2mm_64ch
+cmrr_mbep2d_diff_165dirs_MB3
+ep2d_diff_NODDI_64ch_2mm_101dirs_bmax2300
+ep2d_diff_NODDI_2mm_64ch
+cmrr_mbep2d_diff_165dirs_MB3
+ep2d_diff_NODDI_64ch_2mm_101dirs_bmax2300
+ep2d_diff_b1000_dir72_2.3mm
+ep2d_diff_b1000_dir73_2mm
+ep2d_diff_NODDI_2mm_64ch
+ep2d_diff_NODDI_MB2_2pt2mm
+ep2d_diff_NODDI_2mm_64ch
+[fieldmap]
+gre_field_mapping_for1mmMPM
+gre_field_mapping_for1mmMPM
+gre_field_mapping_for1mmMPM
+gre_field_mapping_1acq_rl
+gre_field_mapping_1acq_rl
+gre_field_mapping_1acq_rl
+Field_mapping
+Field_mapping
+gre_field_mapping_1acq_rl_short
+gre_field_mapping_1acq_rl_64ch
+gre_field_mapping_1acq_rl_64ch
+[ReadoutTimes]
+29.1500
+28.086
+29.1500
+29.1500
+28.086
+29.1500
+0.000
+0.000
+29.1500
+49.12
+29.1500
+__MPM__
+[fieldmap]
+gre_field_mapping_1acq_rl_short
+gre_field_mapping_for1mmMPM
+gre_field_mapping_for1pt5mmMPM
+gre_field_mapping_1acq_rl
+gre_field_mapping_1acq_rl_short
+Field_mapping
+Field_mapping
+gre_field_mapping_1acq_rl_64ch
+gre_field_mapping_1acq_rl_64ch
+gre_field_mapping_1acq_rl
+gre_field_mapping_1acq_rl
+gre_field_mapping_1acq_rl
+gre_field_mapping_1acq_rl_short
+gre_field_mapping_1acq_rl_short
+[B1]
+al_B1mapping_v2d_short
+al_B1mapping_v2d_for1mmMPM
+al_B1mapping_v2d_for1pt5mmMPM
+al_B1mapping_v2d
+al_B1mapping_v2d_short
+al_B1mapping
+al_B1mapping
+al_B1mapping_v2d
+al_B1mapping_v2d
+al_B1mapping_v2d
+al_B1mapping_v2d
+al_B1mapping_v2d
+al_B1mapping_v2d_short
+al_B1mapping_v2d_short
+[MT]
+mt_al_mtflash3d_v2l_1pt5mm
+mt_al_mtflash3d_v2l_1mm
+mt_al_mtflash3d_v2l_1pt5mm
+mt_al_mtflash3d_v2l_1mm
+mt_al_mtflash3d_v2l_1mm
+MT_Optimized
+mt_nw_mtflash3d
+mt_al_mtflash3d_v2l_1pt5mm
+mt_al_mtflash3d_v2l_1mm
+mt_al_mtflash3d_v2l_800um
+mt_al_mtflash3d_v2l_1pt5mm
+mt_al_mtflash3d_v2l_xpace_800um
+mt_al_mtflash3d_v2l_xpace_1pt5mm
+mt_al_mtflash3d_v2l_xpace_1pt5mm
+[PD]
+pd_al_mtflash3d_v2l_1pt5mm
+pd_al_mtflash3d_v2l_1mm
+pd_al_mtflash3d_v2l_1pt5mm
+pd_al_mtflash3d_v2l_1mm
+pd_al_mtflash3d_v2l_1mm
+PD_weighted
+pd_nw_mtflash3d
+pd_al_mtflash3d_v2l_1pt5mm
+pd_al_mtflash3d_v2l_1mm
+pd_al_mtflash3d_v2l_800um
+pd_al_mtflash3d_v2l_1pt5mm
+pd_al_mtflash3d_v2l_xpace_800um_30echoes
+pd_al_mtflash3d_v2l_xpace_1pt5mm
+pd_al_mtflash3d_v2l_1pt5mm
+[T1]
+t1_al_mtflash3d_v2l_1pt5mm
+t1_al_mtflash3d_v2l_1mm
+t1_al_mtflash3d_v2l_1pt5mm
+t1_al_mtflash3d_v2l_1mm
+t1_al_mtflash3d_v2l_1mm
+T1_weighted
+t1_nw_mtflash3d
+t1_al_mtflash3d_v2l_1pt5mm
+t1_al_mtflash3d_v2l_1mm
+t1_al_mtflash3d_v2l_800um
+t1_al_mtflash3d_v2l_1pt5mm
+t1_al_mtflash3d_v2l_xpace_800um
+t1_al_mtflash3d_v2l_xpace_1pt5mm
+t1_al_mtflash3d_v2l_xpace_1pt5mm
+[Resolution]
+1.5mm
+1mm
+1.5mm
+1mm
+1mm
+1mm
+1mm
+1.5mm
+1mm
+800um
+1.5mm
+800um
+1.5mm
+1.5mm
+[diffusion]
+
+__MPMOutputs__
+[Files]
+_A.nii
+_MT.nii
+_MTw.nii
+_PDw.nii
+_R1.nii
+_R1_m.nii
+_R2s.nii
+_T1w.nii
+[OutputFolder]
+mt_al_mtflash3d_v2l_1mm
+mt_al_mtflash3d_v2l_1pt5mm
+[MPMOutputFolderName]
+MPMs
+__MPRAGE__
+[MPRAGE]
+MPRAGE_P3
+t1_mprage_tra_p2_iso
+Anatomic_MT
+__fMRI__
+[EPI]
+al_mepi2d_3mm                                           
+al_mepi2d_v2f_3mm
+al_mepi2d_v2f_3mm                                        
+al_mepi2d_v2f_3mm_20Ch                                  
+al_mepi2d_v2f_3mm_64Ch                                  
+al_mepi2d_v2f_3mm_NamingReading                         
+al_mepi2d_v2f_3mm_Semantic                              
+al_mepi3d_v3c_1pt5mm_thick                              
+al_mepi3d_v3c_2mm_thick                                 
+al_mepi3d_v3c_3mm
+al_mepi2d_3mm_dropout
+[fieldmap]
+gre_field_mapping_1acq_rl_short
+gre_field_mapping_for1mmMPM
+gre_field_mapping_1acq_rl_64ch
+gre_field_mapping_for1pt5mmMPM
+gre_field_mapping_1acq_rl
+Field_mapping
+gre_field_mapping_1acq_rl_64ch
+gre_field_mapping_1acq_rl
+gre_field_mapping_1acq_rl
+gre_field_mapping_1acq_rl
+gre_field_mapping_1acq_rl_64ch
+[pmDefaultFiles]
+None.m
+pm_defaults_Prisma_3mm.m
+pm_defaults_Prisma_3mm.m
+None.m
+None.m
+pm_defaults_Prisma_3mm.m
+pm_defaults_Prisma_3mm.m
+pm_defaults_Prisma_1pt5mm.m
+pm_defaults_Prisma_2mm.m
+pm_defaults_Prisma_3mm_PI.m
+pm_defaults_Prisma_3mm.m
+[NDummies]
+0
+5
+5
+0
+0
+5
+5
+0
+0
+0
+0
+[Resolution]
+'3mm'
+'3mm'
+'3mm'
+'3mm'
+'3mm'
+'3mm'
+'3mm'
+'1.5mm'
+'2mm'
+'3mm'
+'3mm'
+[end]
