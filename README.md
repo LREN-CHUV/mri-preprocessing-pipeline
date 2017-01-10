@@ -17,10 +17,10 @@ Use
 ```
 
 to merge code from master branch to deploy branch.
-Add a signoff in file signoff.md, then
+Add a signoff in file signoffs.md, then
 
 ```
-  git commit -S -m "Signoff" signoff.md
+  git commit -S -m "Signoff" signoffs.md
   git tag -s 1.0
 ```
 
