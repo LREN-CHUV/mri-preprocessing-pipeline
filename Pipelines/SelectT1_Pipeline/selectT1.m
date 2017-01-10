@@ -27,6 +27,8 @@ for sf = 1:Ns
                     OutputProtocolFolder = [OutputFolder,SubjectID,filesep,SessionFolders{sf},filesep,ProtocolFolders{i}];
                     if exist(OutputProtocolFolder,'dir')
                         warning('output protocol folder already exists');
+                    else
+                        mkdir(OutputProtocolFolder);
                     end
                     copyfile(InputProtocolFolder,OutputProtocolFolder);
             end
