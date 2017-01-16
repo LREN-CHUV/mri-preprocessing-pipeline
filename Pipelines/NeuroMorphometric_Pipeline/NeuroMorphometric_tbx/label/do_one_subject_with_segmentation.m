@@ -1,15 +1,20 @@
 function [OutputAtlasFile,OutputVolumeFile] = do_one_subject_with_segmentation(c1ImageFileName,c2ImageFileName,rc1ImageFileName,rc2ImageFileName,AtlasOutputFolder,VolumeOutputFolder)
 
+% This function computes individual Atlases using the standard NeuroMorphometrics Atlas. This is based on the NeuroMorphometrics Toolbox.
 %% Input Parameters:
-%   PP : Input Image in Nifti format.
+%   c1ImageFileName: 'c1' or gray matter segmentation image.
+%   c2ImageFileName: 'c2' or white matter segmentation image.
+%   rc1ImageFileName: 'c1' or gray matter segmentation image in semi-standarized space.
+%   rc2ImageFileName: 'c2' or white matter segmentation image in semi-standarized space.
 %   AtlasOutputFolder  : Folder where Atlases will be saved.
-%   VolumeOutputFolder : Folder where volume files (text files) will be saved. These
-%                        files contains the volume of the anatomical structures.
+%   VolumeOutputFolder : Folder where volume files (text files) will be saved. These files contains the volume of the anatomical structures.
 %
 %% Outputs: 
-%  In AtlasOutputFolder will be saved the Atlases. These are images *.nii.
-%  In VolumeOutputFolder will be saved the volume files. These are *.txt ,
-%  text files with the volume of each structure.
+%  In AtlasOutputFolder will be saved the individual atlases. These are *.nii images.
+%  In VolumeOutputFolder will be saved the volume files. These are *.txt ,text files with the volume of each structure.
+%%  Outputs Parameters:
+%  OutputAtlasFile : Full path of the atlas file (*.nii).
+%  OutputVolumeFile : Full path of the volume file (*.txt).
 %
 %% John Ashburner, FIL, UCL
 %% Modified (data manipulation):  Lester Melie-Garcia

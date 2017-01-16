@@ -1,6 +1,6 @@
 function NeuroMorphometric_pipeline_parallel(PipelineConfigFile)
 
-% This function run in parallel the function 'NeuroMorphometric_pipeline.m' that computes individual Atlases based on the NeuroMorphometrics Atlas. This is based on the NeuroMorphometrics Toolbox.
+% This function runs in parallel the function 'NeuroMorphometric_pipeline.m' that computes individual Atlases based on the NeuroMorphometrics Atlas. This is based on the NeuroMorphometrics Toolbox.
 % This delivers three files per subject: 1) Atlas File (*.nii); 2) Volumes of the Morphometric Atlas structures (*.txt); 3) Excel File (.xls) containing
 % the volume, globals, and Multiparametric Maps (R2*, R1, MT, PD) for each structure defined in the Subject Atlas.
 % 
@@ -17,7 +17,7 @@ if ~exist('PipelineConfigFile','var')
     end;
 end;
 
-[MPMInputFolder,LocalFolder,AtlasingServerFolder,ProtocolsFile] = Read_NeuroMorphometric_pipeline_config(PipelineConfigFile); %#ok<*STOUT>
+[MPMInputFolder,LocalFolder,AtlasingServerFolder,ProtocolsFile,TPM_Template,TableFormat] = Read_NeuroMorphometric_pipeline_config(PipelineConfigFile); %#ok<*STOUT>
 
 if ~strcmp(MPMInputFolder(end),filesep)
      MPMInputFolder = [MPMInputFolder,filesep];
@@ -43,16 +43,16 @@ SubjectFolders = SubjectFolders(ind);
 
 %SubjectFolders = SubjectFolders(1:floor(length(SubjectFolders)/2));
 
-disp(['Number of Subjects to Run: ',num2str(length(SubjectFolders))]);
-
 Ns = length(SubjectFolders);  % Number of subjects ...
+disp(['Number of Subjects to Run: ',num2str(Ns)]);
+
 jm = findResource('scheduler','type','local'); %#ok
-%NeuroMorphometric_pipeline(SubjID,InputDataFolder,LocalFolder,AtlasingOutputFolder,ProtocolsFile)
+%NeuroMorphometric_pipeline(SubjID,InputDataFolder,LocalFolder,AtlasingOutputFolder,ProtocolsFile,TableFormat,TPM_Template)
 PipelineFunction = 'NeuroMorphometric_pipeline';
 for i=1:Ns
     SubjID = SubjectFolders{i};
     JobID = ['job_',check_clean_IDs(SubjID)];
-    InputParametersF = horzcat({SubjID},{MPMInputFolder},{LocalFolder},{AtlasingServerFolder},{ProtocolsFile}); %#ok
+    InputParametersF = horzcat({SubjID},{MPMInputFolder},{LocalFolder},{AtlasingServerFolder},{ProtocolsFile},{TableFormat},{TPM_Template}); %#ok
     NameField = 'Name'; %#ok
     PathDependenciesField = 'PathDependencies'; %#ok
     createJob_cmd = [JobID,' = createJob(jm,NameField,SubjID);']; % create Job command

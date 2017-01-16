@@ -13,7 +13,7 @@ if ~exist('PipelineConfigFile','var')
     end;
 end;
 
-[MPMInputFolder,LocalFolder,AtlasingServerFolder,ProtocolsFile] = Read_NeuroMorphometric_pipeline_config(PipelineConfigFile); %#ok<*STOUT>
+[MPMInputFolder,LocalFolder,AtlasingServerFolder,ProtocolsFile,TPM_Template,TableFormat] = Read_NeuroMorphometric_pipeline_config(PipelineConfigFile); %#ok<*STOUT>
 
 if ~strcmp(MPMInputFolder(end),filesep)
      MPMInputFolder = [MPMInputFolder,filesep];
@@ -37,22 +37,16 @@ SubjectFolders_Atlasing = getListofFolders(AtlasingServerFolder);
 ind = not(ismember(SubjectFolders,SubjectFolders_Atlasing));
 SubjectFolders = SubjectFolders(ind);
 
+%SubjectFolders ={'PR00101'};%{'PR01930_AF251153'}; %{'PR01925_AR121248'};
 %SubjectFolders = SubjectFolders(1:floor(length(SubjectFolders)/2));
 
 disp(['Number of Subjects to Run: ',num2str(length(SubjectFolders))]);
 
 Ns = length(SubjectFolders);  % Number of subjects ...
-%NeuroMorphometric_pipeline(SubjID,InputDataFolder,LocalFolder,AtlasingOutputFolder,ProtocolsFile)
+%NeuroMorphometric_pipeline(SubjID,InputDataFolder,LocalFolder,AtlasingOutputFolder,ProtocolsFile,TableFormat,TPM_Template)
 for i=1:Ns
     SubjID = SubjectFolders{i};
-    NeuroMorphometric_pipeline(SubjID,MPMInputFolder,LocalFolder,AtlasingServerFolder,ProtocolsFile);
+    NeuroMorphometric_pipeline(SubjID,MPMInputFolder,LocalFolder,AtlasingServerFolder,ProtocolsFile,TableFormat,TPM_Template);    
 end;
                                             
-end
-
-%% ======= Internal Functions ======= %%
-function IDout = check_clean_IDs(IDin)
-
-IDout= IDin(isstrprop(IDin,'alphanum'));
-
 end
