@@ -238,7 +238,7 @@ dataFiles  = pickfiles(OutputFolder,'.nii');
 
 for df = 1:size(dataFiles)
     [FilePath,FileName,FileExt]=fileparts(deblank(dataFiles(df,:)));
-    movefile(dataFiles(df,:),[FilePath,filesep,'s',SubjID,'_',FileName,FileExt]);
+    movefile(deblank(dataFiles(df,:)),[FilePath,filesep,'s',SubjID,'_',FileName,FileExt]);
 end
 end
 
