@@ -1,4 +1,4 @@
-function [MPMInputFolder,LocalFolder,AtlasingServerFolder,ProtocolsFile] = Read_NeuroMorphometric_pipeline_config(PipelineConfigFile) %#ok<*STOUT>
+function [MPMInputFolder,LocalFolder,AtlasingServerFolder,ProtocolsFile,TPM_Template,TableFormat] = Read_NeuroMorphometric_pipeline_config(PipelineConfigFile) %#ok<*STOUT>
 
 %% Lester Melie-Garcia
 % LREN, CHUV. 
@@ -26,5 +26,7 @@ MPMInputFolder = MPMInputFolder; %#ok
 LocalFolder = LocalFolder; %#ok
 AtlasingServerFolder = AtlasingServerFolder; %#ok
 ProtocolsFile = ProtocolsFile; %#ok
+TPM_Template = TPM_Template; %#ok
+TableFormat = TableFormat; %#ok
 
 end

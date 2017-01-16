@@ -24,7 +24,11 @@ if ~strcmp(MPMFolder(end),filesep)
     MPMFolder = [MPMFolder,filesep];
 end;
 if ~exist('TableFormat','var')
-    TableFormat = 'xls';
+    if isunix
+        TableFormat = 'csv';
+    else
+        TableFormat = 'xls';
+    end;
 else
     TableFormat = lower(TableFormat);
 end;
@@ -40,9 +44,6 @@ XLS_Table(2:end,1) = StructNames;
 SCodes =  cell2mat(SCodes);
 Vols_raw = load(VolumeFile); Vols = Vols_raw(SCodes);
 XLS_Table(2:end,2) = mat2cell(Vols,ones(size(Vols,1),1));
-MPMs_mat = zeros(NStruct,8);
-Nvoxels = cell(NStruct,1);
-Iatlas = spm_read_vols(spm_vol(AtlasFile));
 R2s_Image = pickfiles(MPMFolder(1:end-1),{'_R2s.nii'});
 if ~isempty(R2s_Image)
     I_R2s =  spm_read_vols(spm_vol(R2s_Image(1,:)));
@@ -59,121 +60,129 @@ R1_Image = pickfiles(MPMFolder(1:end-1),{'_R1.nii'});
 if ~isempty(R1_Image)
     I_R1 =  spm_read_vols(spm_vol(R1_Image(1,:)));
 end;
-for i=1:NStruct    
-    ind = Iatlas==SCodes(i);
-    Nvoxels{i} = nnz(double(ind)); 
-    if ~isempty(R2s_Image)
-        if Nvoxels{i}~=0
-            MPMs_mat(i,1) = mean(I_R2s(ind));
-            MPMs_mat(i,2) = std(I_R2s(ind));
-        else
-            MPMs_mat(i,1) = 0;
-            MPMs_mat(i,2) = 0;
+if ~isempty(R2s_Image)||~isempty(MT_Image)||~isempty(PD_Image)||~isempty(R1_Image)
+    MPMs_mat = zeros(NStruct,8);
+    Nvoxels = cell(NStruct,1);
+    Iatlas = spm_read_vols(spm_vol(AtlasFile));
+    for i=1:NStruct
+        ind = Iatlas==SCodes(i);
+        Nvoxels{i} = nnz(double(ind));
+        if ~isempty(R2s_Image)
+            if Nvoxels{i}~=0
+                MPMs_mat(i,1) = mean(I_R2s(ind));
+                MPMs_mat(i,2) = std(I_R2s(ind));
+            else
+                MPMs_mat(i,1) = 0;
+                MPMs_mat(i,2) = 0;
+            end;
+        end;
+        if ~isempty(MT_Image)
+            if Nvoxels{i}~=0
+                MPMs_mat(i,3) = mean(I_MT(ind));
+                MPMs_mat(i,4) = std(I_MT(ind));
+            else
+                MPMs_mat(i,3) = 0;
+                MPMs_mat(i,4) = 0;
+            end
+        end;
+        if ~isempty(PD_Image)
+            if Nvoxels{i}~=0
+                MPMs_mat(i,5) = mean(I_PD(ind));
+                MPMs_mat(i,6) = std(I_PD(ind));
+            else
+                MPMs_mat(i,5) = 0;
+                MPMs_mat(i,6) = 0;
+            end;
+        end;
+        if ~isempty(R1_Image)
+            if Nvoxels{i}~=0
+                MPMs_mat(i,7) = mean(I_R1(ind));
+                MPMs_mat(i,8) = std(I_R1(ind));
+            else
+                MPMs_mat(i,7) = 0;
+                MPMs_mat(i,8) = 0;
+            end
         end;
     end;
-    if ~isempty(MT_Image)
-        if Nvoxels{i}~=0
-            MPMs_mat(i,3) = mean(I_MT(ind));
-            MPMs_mat(i,4) = std(I_MT(ind));
-        else
-            MPMs_mat(i,3) = 0;
-            MPMs_mat(i,4) = 0;
-        end
-    end;
-    if ~isempty(PD_Image)
-        if Nvoxels{i}~=0
-            MPMs_mat(i,5) = mean(I_PD(ind));
-            MPMs_mat(i,6) = std(I_PD(ind));
-        else
-            MPMs_mat(i,5) = 0;
-            MPMs_mat(i,6) = 0;
-        end;
-    end;
-    if ~isempty(R1_Image) 
-        if Nvoxels{i}~=0
-            MPMs_mat(i,7) = mean(I_R1(ind));
-            MPMs_mat(i,8) = std(I_R1(ind));
-        else
-            MPMs_mat(i,7) = 0;
-            MPMs_mat(i,8) = 0;
-        end
-    end;    
+    
+    %% Adding Intracraneal Volume
+    V_GM = spm_vol(GM_File); voxvol = abs(det(V_GM.mat(1:3,1:3)));
+    I_GM =  spm_read_vols(V_GM);
+    I_WM =  spm_read_vols(spm_vol(WM_File));
+    I_CSF =  spm_read_vols(spm_vol(CSF_File));
+    TIV = (I_GM + I_WM + I_CSF)>0.1;
+    TIV_Nvox = sum(TIV(:));
+    TIV = voxvol*TIV_Nvox/1000; % in cm3
+    % ICV_Table = cell(2,1);
+    % ICV_Table{1,1} = 'Intracraneal Volume(cm3)';
+    % ICV_Table{2,1} = ICV;
+    %%
+    Vol_Normalized = mat2cell(cell2mat(XLS_Table(2:end,2))./TIV,ones(length(XLS_Table(2:end,2)),1));
+    MPMs_mat = mat2cell(MPMs_mat,ones(size(MPMs_mat,1),1),ones(size(MPMs_mat,2),1)); %#ok
+    MPMs_mat = horzcat(MPMs_mat,Nvoxels,Vol_Normalized);
+    XLS_Table(2:end,3:end) = MPMs_mat;
+    
+    %% Adding White Matter Stats
+    WM_StructNames = getNeuromorphoWhiteMatter;
+    WM_Codes = getStructCodes(StructNames,SCodes,WM_StructNames);
+    ind_WM_R = Iatlas==WM_Codes{1}; ind_WM_L = Iatlas==WM_Codes{2}; ind_WM_all = or(ind_WM_R,ind_WM_L);
+    WM_R_Nvox = sum(ind_WM_R(:)); WM_L_Nvox = sum(ind_WM_L(:)); WM_total_Nvox = WM_R_Nvox + WM_L_Nvox;
+    WM_R_Vol = Vols_raw(WM_Codes{1}); WM_L_Vol = Vols_raw(WM_Codes{2}); WM_total_Vol = WM_R_Vol + WM_L_Vol;
+    %WM_R_Vol = WM_R_Nvox*voxvol/1000; WM_L_Vol = WM_L_Nvox*voxvol/1000; WM_total_Vol = WM_R_Vol + WM_L_Vol;
+    %WM_R_R2s = mean(I_R2s(ind_WM_R)); WM_L_R2s = mean(I_R2s(ind_WM_L));
+    WM_total_R2s = mean(I_R2s(ind_WM_all)); WM_total_R2s_std = std(I_R2s(ind_WM_all));
+    %WM_R_MT  = mean(I_MT(ind_WM_R)) ; WM_L_MT = mean(I_MT(ind_WM_L))  ;
+    WM_total_MT = mean(I_MT(ind_WM_all)); WM_total_MT_std = std(I_MT(ind_WM_all));
+    %WM_R_PD  = mean(I_PD(ind_WM_R)) ; WM_L_PD = mean(I_PD(ind_WM_L))  ;
+    WM_total_PD = mean(I_PD(ind_WM_all)); WM_total_PD_std = std(I_PD(ind_WM_all));
+    %WM_R_R1  = mean(I_R1(ind_WM_R)) ; WM_L_R1 = mean(I_R1(ind_WM_L))  ;
+    WM_total_R1 = mean(I_R1(ind_WM_all)); WM_total_R1_std = std(I_R1(ind_WM_all));
+    %% Adding Gray Matter Stats
+    GM_StructNames = get_GraymatterNeuromorphoAtlasInfo;
+    GM_Codes = cell2mat(getStructCodes(StructNames,SCodes,GM_StructNames));
+    GM_Codes_R = GM_Codes(1:2:end); GM_Codes_L = GM_Codes(2:2:end);
+    ind_GM_R = ismember(Iatlas,GM_Codes_R); ind_GM_L = ismember(Iatlas,GM_Codes_L); ind_GM_all = or(ind_GM_R,ind_GM_L);
+    GM_R_Nvox = sum(ind_GM_R(:)); GM_L_Nvox = sum(ind_GM_L(:)); GM_total_Nvox = GM_R_Nvox + GM_L_Nvox;
+    GM_R_Vol = sum(Vols_raw(GM_Codes_R)); GM_L_Vol = sum(Vols_raw(GM_Codes_L)); GM_total_Vol = GM_R_Vol + GM_L_Vol;
+    %GM_R_Vol = GM_R_Nvox*voxvol/1000; GM_L_Vol = GM_L_Nvox*voxvol/1000; GM_total_Vol = GM_R_Vol + GM_L_Vol;
+    GM_R_R2s = mean(I_R2s(ind_GM_R)); GM_L_R2s = mean(I_R2s(ind_GM_L)); GM_total_R2s = mean(I_R2s(ind_GM_all));
+    GM_R_R2s_std = std(I_R2s(ind_GM_R)); GM_L_R2s_std = std(I_R2s(ind_GM_L)); GM_total_R2s_std = std(I_R2s(ind_GM_all));
+    GM_R_MT  = mean(I_MT(ind_GM_R)) ; GM_L_MT = mean(I_MT(ind_GM_L))  ; GM_total_MT = mean(I_MT(ind_GM_all));
+    GM_R_MT_std  = std(I_MT(ind_GM_R)) ; GM_L_MT_std = std(I_MT(ind_GM_L))  ; GM_total_MT_std = std(I_MT(ind_GM_all));
+    GM_R_PD  = mean(I_PD(ind_GM_R)) ; GM_L_PD = mean(I_PD(ind_GM_L))  ; GM_total_PD = mean(I_PD(ind_GM_all));
+    GM_R_PD_std  = std(I_PD(ind_GM_R)) ; GM_L_PD_std = std(I_PD(ind_GM_L))  ; GM_total_PD_std = std(I_PD(ind_GM_all));
+    GM_R_R1  = mean(I_R1(ind_GM_R)) ; GM_L_R1 = mean(I_R1(ind_GM_L))  ; GM_total_R1 = mean(I_R1(ind_GM_all));
+    GM_R_R1_std  = std(I_R1(ind_GM_R)) ; GM_L_R1_std = std(I_R1(ind_GM_L))  ; GM_total_R1_std = std(I_R1(ind_GM_all));
+    
+    GM_total_Vol_norm = GM_total_Vol/TIV; GM_R_Vol_norm = GM_R_Vol/TIV; GM_L_Vol_norm=GM_L_Vol/TIV;
+    WM_total_Vol_norm = WM_total_Vol/TIV;
+    %% Globals Table
+    
+    GT = [GM_total_Vol,GM_total_R2s,GM_total_R2s_std,GM_total_MT,GM_total_MT_std,GM_total_PD,GM_total_PD_std,GM_total_R1,GM_total_R1_std,GM_total_Nvox,GM_total_Vol_norm
+        GM_R_Vol    ,GM_R_R2s    ,GM_R_R2s_std    ,GM_R_MT    ,GM_R_MT_std    ,GM_R_PD    ,GM_R_PD_std    ,GM_R_R1    ,GM_R_R1_std    ,GM_R_Nvox    ,GM_R_Vol_norm
+        GM_L_Vol    ,GM_L_R2s    ,GM_L_R2s_std    ,GM_L_MT    ,GM_L_MT_std    ,GM_L_PD    ,GM_L_PD_std    ,GM_L_R1    ,GM_L_R1_std    ,GM_L_Nvox    ,GM_L_Vol_norm
+        WM_total_Vol,WM_total_R2s,WM_total_R2s_std,WM_total_MT,WM_total_MT_std,WM_total_PD,WM_total_PD_std,WM_total_R1,WM_total_R1_std,WM_total_Nvox,WM_total_Vol_norm
+        TIV         ,   0        ,   0            ,   0       ,   0           ,   0       ,   0           ,   0       ,   0           ,TIV_Nvox     ,     1            ];
+    Globals_Table = cell(size(GT,1)+1,length(Table_Header));
+    Globals_Table(1,:) = Table_Header;
+    Globals_Table(2:end,1) = {'Total Cerebral Grey Matter';'Right Cerebral Grey Matter';'Left Cerebral Grey Matter';'Total Cerebral White Matter';'Intracraneal'};
+    % GT = [GM_total_Vol,GM_total_R2s,GM_total_MT,GM_total_PD,GM_total_R1,GM_total_Nvox
+    %       GM_R_Vol    ,GM_R_R2s    ,GM_R_MT    ,GM_R_PD    ,GM_R_R1    ,GM_R_Nvox
+    %       GM_L_Vol    ,GM_L_R2s    ,GM_L_MT    ,GM_L_PD    ,GM_L_R1    ,GM_L_Nvox
+    %       WM_total_Vol,WM_total_R2s,WM_total_MT,WM_total_PD,WM_total_R1,WM_total_Nvox
+    %       WM_R_Vol    ,WM_R_R2s    ,WM_R_MT    ,WM_R_PD    ,WM_R_R1    ,WM_R_Nvox
+    %       WM_L_Vol    ,WM_L_R2s    ,WM_L_MT    ,WM_L_PD    ,WM_L_R1    ,WM_L_Nvox];
+    Globals_Table(2:end,2:end) = mat2cell(GT,ones(size(GT,1),1),ones(size(GT,2),1)); %#ok
+    
+    XLS_Table = vertcat(XLS_Table,Globals_Table(2:end,:));  % Table with all MPMs plus structures volumes.
+else
+    XLS_Table=XLS_Table(:,1:2); % Taking only name of the structures and volume.
 end;
 
-%% Adding Intracraneal Volume
-V_GM = spm_vol(GM_File); voxvol = abs(det(V_GM.mat(1:3,1:3)));
-I_GM =  spm_read_vols(V_GM);
-I_WM =  spm_read_vols(spm_vol(WM_File));
-I_CSF =  spm_read_vols(spm_vol(CSF_File));
-TIV = (I_GM + I_WM + I_CSF)>0.1; 
-TIV_Nvox = sum(TIV(:));
-TIV = voxvol*TIV_Nvox/1000; % in cm3
-% ICV_Table = cell(2,1);
-% ICV_Table{1,1} = 'Intracraneal Volume(cm3)';
-% ICV_Table{2,1} = ICV; 
-%%
-Vol_Normalized = mat2cell(cell2mat(XLS_Table(2:end,2))./TIV,ones(length(XLS_Table(2:end,2)),1));
-MPMs_mat = mat2cell(MPMs_mat,ones(size(MPMs_mat,1),1),ones(size(MPMs_mat,2),1)); %#ok
-MPMs_mat = horzcat(MPMs_mat,Nvoxels,Vol_Normalized);
-XLS_Table(2:end,3:end) = MPMs_mat;
-
-%% Adding White Matter Stats
-WM_StructNames = getNeuromorphoWhiteMatter;
-WM_Codes = getStructCodes(StructNames,SCodes,WM_StructNames);
-ind_WM_R = Iatlas==WM_Codes{1}; ind_WM_L = Iatlas==WM_Codes{2}; ind_WM_all = or(ind_WM_R,ind_WM_L);
-WM_R_Nvox = sum(ind_WM_R(:)); WM_L_Nvox = sum(ind_WM_L(:)); WM_total_Nvox = WM_R_Nvox + WM_L_Nvox;
-WM_R_Vol = Vols_raw(WM_Codes{1}); WM_L_Vol = Vols_raw(WM_Codes{2}); WM_total_Vol = WM_R_Vol + WM_L_Vol;
-%WM_R_Vol = WM_R_Nvox*voxvol/1000; WM_L_Vol = WM_L_Nvox*voxvol/1000; WM_total_Vol = WM_R_Vol + WM_L_Vol;
-%WM_R_R2s = mean(I_R2s(ind_WM_R)); WM_L_R2s = mean(I_R2s(ind_WM_L)); 
-WM_total_R2s = mean(I_R2s(ind_WM_all)); WM_total_R2s_std = std(I_R2s(ind_WM_all));
-%WM_R_MT  = mean(I_MT(ind_WM_R)) ; WM_L_MT = mean(I_MT(ind_WM_L))  ;
-WM_total_MT = mean(I_MT(ind_WM_all)); WM_total_MT_std = std(I_MT(ind_WM_all));
-%WM_R_PD  = mean(I_PD(ind_WM_R)) ; WM_L_PD = mean(I_PD(ind_WM_L))  ;
-WM_total_PD = mean(I_PD(ind_WM_all)); WM_total_PD_std = std(I_PD(ind_WM_all));
-%WM_R_R1  = mean(I_R1(ind_WM_R)) ; WM_L_R1 = mean(I_R1(ind_WM_L))  ;
-WM_total_R1 = mean(I_R1(ind_WM_all)); WM_total_R1_std = std(I_R1(ind_WM_all));
-%% Adding Gray Matter Stats
-GM_StructNames = get_GraymatterNeuromorphoAtlasInfo;
-GM_Codes = cell2mat(getStructCodes(StructNames,SCodes,GM_StructNames));
-GM_Codes_R = GM_Codes(1:2:end); GM_Codes_L = GM_Codes(2:2:end);
-ind_GM_R = ismember(Iatlas,GM_Codes_R); ind_GM_L = ismember(Iatlas,GM_Codes_L); ind_GM_all = or(ind_GM_R,ind_GM_L);
-GM_R_Nvox = sum(ind_GM_R(:)); GM_L_Nvox = sum(ind_GM_L(:)); GM_total_Nvox = GM_R_Nvox + GM_L_Nvox; 
-GM_R_Vol = sum(Vols_raw(GM_Codes_R)); GM_L_Vol = sum(Vols_raw(GM_Codes_L)); GM_total_Vol = GM_R_Vol + GM_L_Vol;
-%GM_R_Vol = GM_R_Nvox*voxvol/1000; GM_L_Vol = GM_L_Nvox*voxvol/1000; GM_total_Vol = GM_R_Vol + GM_L_Vol;
-GM_R_R2s = mean(I_R2s(ind_GM_R)); GM_L_R2s = mean(I_R2s(ind_GM_L)); GM_total_R2s = mean(I_R2s(ind_GM_all));
-GM_R_R2s_std = std(I_R2s(ind_GM_R)); GM_L_R2s_std = std(I_R2s(ind_GM_L)); GM_total_R2s_std = std(I_R2s(ind_GM_all)); 
-GM_R_MT  = mean(I_MT(ind_GM_R)) ; GM_L_MT = mean(I_MT(ind_GM_L))  ; GM_total_MT = mean(I_MT(ind_GM_all));
-GM_R_MT_std  = std(I_MT(ind_GM_R)) ; GM_L_MT_std = std(I_MT(ind_GM_L))  ; GM_total_MT_std = std(I_MT(ind_GM_all));
-GM_R_PD  = mean(I_PD(ind_GM_R)) ; GM_L_PD = mean(I_PD(ind_GM_L))  ; GM_total_PD = mean(I_PD(ind_GM_all));
-GM_R_PD_std  = std(I_PD(ind_GM_R)) ; GM_L_PD_std = std(I_PD(ind_GM_L))  ; GM_total_PD_std = std(I_PD(ind_GM_all));
-GM_R_R1  = mean(I_R1(ind_GM_R)) ; GM_L_R1 = mean(I_R1(ind_GM_L))  ; GM_total_R1 = mean(I_R1(ind_GM_all));
-GM_R_R1_std  = std(I_R1(ind_GM_R)) ; GM_L_R1_std = std(I_R1(ind_GM_L))  ; GM_total_R1_std = std(I_R1(ind_GM_all));
-
-GM_total_Vol_norm = GM_total_Vol/TIV; GM_R_Vol_norm = GM_R_Vol/TIV; GM_L_Vol_norm=GM_L_Vol/TIV; 
-WM_total_Vol_norm = WM_total_Vol/TIV;
-%% Globals Table
-
-GT = [GM_total_Vol,GM_total_R2s,GM_total_R2s_std,GM_total_MT,GM_total_MT_std,GM_total_PD,GM_total_PD_std,GM_total_R1,GM_total_R1_std,GM_total_Nvox,GM_total_Vol_norm
-      GM_R_Vol    ,GM_R_R2s    ,GM_R_R2s_std    ,GM_R_MT    ,GM_R_MT_std    ,GM_R_PD    ,GM_R_PD_std    ,GM_R_R1    ,GM_R_R1_std    ,GM_R_Nvox    ,GM_R_Vol_norm
-      GM_L_Vol    ,GM_L_R2s    ,GM_L_R2s_std    ,GM_L_MT    ,GM_L_MT_std    ,GM_L_PD    ,GM_L_PD_std    ,GM_L_R1    ,GM_L_R1_std    ,GM_L_Nvox    ,GM_L_Vol_norm
-      WM_total_Vol,WM_total_R2s,WM_total_R2s_std,WM_total_MT,WM_total_MT_std,WM_total_PD,WM_total_PD_std,WM_total_R1,WM_total_R1_std,WM_total_Nvox,WM_total_Vol_norm
-      TIV         ,   0        ,   0            ,   0       ,   0           ,   0       ,   0           ,   0       ,   0           ,TIV_Nvox     ,     1            ];
-Globals_Table = cell(size(GT,1)+1,length(Table_Header));
-Globals_Table(1,:) = Table_Header;
-Globals_Table(2:end,1) = {'Total Cerebral Grey Matter';'Right Cerebral Grey Matter';'Left Cerebral Grey Matter';'Total Cerebral White Matter';'Intracraneal'};
-% GT = [GM_total_Vol,GM_total_R2s,GM_total_MT,GM_total_PD,GM_total_R1,GM_total_Nvox
-%       GM_R_Vol    ,GM_R_R2s    ,GM_R_MT    ,GM_R_PD    ,GM_R_R1    ,GM_R_Nvox
-%       GM_L_Vol    ,GM_L_R2s    ,GM_L_MT    ,GM_L_PD    ,GM_L_R1    ,GM_L_Nvox
-%       WM_total_Vol,WM_total_R2s,WM_total_MT,WM_total_PD,WM_total_R1,WM_total_Nvox
-%       WM_R_Vol    ,WM_R_R2s    ,WM_R_MT    ,WM_R_PD    ,WM_R_R1    ,WM_R_Nvox
-%       WM_L_Vol    ,WM_L_R2s    ,WM_L_MT    ,WM_L_PD    ,WM_L_R1    ,WM_L_Nvox];
-Globals_Table(2:end,2:end) = mat2cell(GT,ones(size(GT,1),1),ones(size(GT,2),1)); %#ok
-
-XLS_Table = vertcat(XLS_Table,Globals_Table(2:end,:));
-if strcmpi(TableFormat,'xls')    
+if strcmpi(TableFormat,'xls')
     xlswrite(OutputCSVFile,XLS_Table,'Data');
 else
-    cell2csv(OutputCSVFile, XLS_Table,','); % Case for TableFormat = 'csv';
+    cell2csv(OutputCSVFile,XLS_Table,','); % Case for TableFormat = 'csv';
 end;
 %xlswrite(OutputCSVFile,Globals_Table,'Globals');
 %xlswrite(OutputCSVFile,ICV_Table,'ICV');
