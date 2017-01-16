@@ -1,4 +1,4 @@
-function job_dcm2nii_LREN(InputDataFolder,OutputFolder,datatype)
+function job_dcm2nii_LREN(InputDataFolder,OutputFolder,datatype,dcm2niiProgram)
 
 % This function convert the dicom/Philips PAR/REC files to Nifti format using
 % dcm2nii tool developed by Chris Rorden.
@@ -8,15 +8,18 @@ function job_dcm2nii_LREN(InputDataFolder,OutputFolder,datatype)
 %    InputDataFolder : Folder with dicom/par/rec files.
 %    OutputFolder : Folder where the converted files will be saved.
 %    datatype: type of data to be converted : DTI, fMRI, T1, ASL.
+%    dcm2niiProgram: optional, full path to dcm2nii tool
 %
 %% Lester Melie-Garcia
 % Bern, November 10th, 2013
 % Modified from job_dcm2nii.m program : Lausanne June 3th, 2014
 
-if isunix
-    dcm2niiProgram = which('dcm2nii');
-else
-    dcm2niiProgram = which('dcm2nii.exe');
+if isempty(dcm2niiProgram)
+    if isunix
+        dcm2niiProgram = which('dcm2nii');
+    else
+        dcm2niiProgram = which('dcm2nii.exe');
+    end;
 end;
 if exist('InputDataFolder','var')
     if isempty(InputDataFolder)
@@ -59,7 +62,7 @@ if ~isempty(dcm2niiProgram)
         end;
         dcm2niiSetup.OutDir = OutputFolder;
         Dcm2niiIniFile=saveIniFile(dcm2niiSetup);
-        
+
         ParRec1 = pickfiles(InputDataFolder(j,:),'.rec');
         ParRec2 = pickfiles(InputDataFolder(j,:),'.REC');
         isParRec = (~isempty(ParRec1))||(~isempty(ParRec2));
@@ -80,7 +83,7 @@ if ~isempty(dcm2niiProgram)
         system(dcm2niiCommand);
         delete(Dcm2niiIniFile);
         toDel_o = dir(fullfile(OutputFolder, strcat('o*.nii')));  %remove extra output images if exists
-        toDel_co = dir(fullfile(OutputFolder, strcat('co*.nii'))); %remove extra output images if exists 
+        toDel_co = dir(fullfile(OutputFolder, strcat('co*.nii'))); %remove extra output images if exists
         toDel = [toDel_o; toDel_co];
         files2Delete = {toDel.name}';
         for del_files = 1:size(files2Delete)
@@ -180,4 +183,3 @@ end;
 fclose(fid);
 
 return; % end function saveIniFile
-

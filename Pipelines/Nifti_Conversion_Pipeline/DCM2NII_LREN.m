@@ -1,4 +1,4 @@
-function isDone = DCM2NII_LREN(SubjectFolder,SubjID,OutputFolder,NiFti_Server_OutputFolder,ProtocolsFile)
+function isDone = DCM2NII_LREN(SubjectFolder,SubjID,OutputFolder,NiFti_Server_OutputFolder,ProtocolsFile,dcm2niiProgram)
 
 % This function convert the dicom files to Nifti format using
 % the SPM tools and dcm2nii tool developed by Chris Rorden
@@ -34,9 +34,9 @@ try
     if ~strcmp(SubjectFolder(end),filesep)
         SubjectFolder = [SubjectFolder,filesep];
     end;
-    
+
     spm_jobman('initcfg');
-    
+
     SubjectFolder = [SubjectFolder,SubjID,filesep];
     TempCovFolder = 'Nifti_temp';
     SessionFolders = getListofFolders(SubjectFolder);
@@ -108,9 +108,9 @@ try
                                 VBQ_mosaic2nii_correction(InSubDir,OrgOutputFolder);
                             end;
                         case 'other'
-                            other2nii(InSubDir,Subj_OutputFolder,FolderNames{i},Sessionstr,SubjID,RepetFolders{k});
+                            other2nii(InSubDir,Subj_OutputFolder,FolderNames{i},Sessionstr,SubjID,RepetFolders{k},dcm2niiProgram);
                         case 'diff'
-                            DWI2nii(InSubDir,Subj_OutputFolder,FolderNames{i},Sessionstr,SubjID,RepetFolders{k});
+                            DWI2nii(InSubDir,Subj_OutputFolder,FolderNames{i},Sessionstr,SubjID,RepetFolders{k},dcm2niiProgram);
                         case 'fMRI_dropout'
                             dicom_files = spm_select('FPListRec',InSubDir,'.*');
                             matlabbatch{1}.spm.util.import.dicom.data = cellstr(dicom_files); % Input Folder to be converted.
@@ -195,7 +195,7 @@ OrgOutputFolder = [OrgOutputFolder,filesep,RepetFolder];
 
 end
 %% DWI2nii(InSubDir,Subj_OutputFolder)
-function DWI2nii(InSubDir,Subj_OutputFolder,diff_Folder,Sessionstr,SubjID,RepetFolder)
+function DWI2nii(InSubDir,Subj_OutputFolder,diff_Folder,Sessionstr,SubjID,RepetFolder,dcm2niiProgram)
 
 if ~strcmp(InSubDir(end),filesep)
     InSubDir = [InSubDir,filesep];
@@ -208,7 +208,7 @@ OutputFolder = [Subj_OutputFolder,Sessionstr,filesep,diff_Folder,filesep,RepetFo
 if ~exist(OutputFolder,'dir')
     mkdir(OutputFolder);
 end;
-job_dcm2nii_LREN(InSubDir,OutputFolder,'DTI');
+job_dcm2nii_LREN(InSubDir,OutputFolder,'DTI',dcm2niiProgram);
 bvecsFile = pickfiles(OutputFolder,'.bvec');  % gradient directions info
 bvalsFile = pickfiles(OutputFolder,'.bval'); % b-values
 dataFile  = pickfiles(OutputFolder,'.nii');
@@ -220,7 +220,7 @@ end;
 
 end
 
-function other2nii(InSubDir,Subj_OutputFolder,d_Folder,Sessionstr,SubjID,RepetFolder)
+function other2nii(InSubDir,Subj_OutputFolder,d_Folder,Sessionstr,SubjID,RepetFolder,dcm2niiProgram)
 
 if ~strcmp(InSubDir(end),filesep)
     InSubDir = [InSubDir,filesep];
@@ -233,7 +233,7 @@ OutputFolder = [Subj_OutputFolder,Sessionstr,filesep,d_Folder,filesep,RepetFolde
 if ~exist(OutputFolder,'dir')
     mkdir(OutputFolder);
 end;
-job_dcm2nii_LREN(InSubDir,OutputFolder,'T1');
+job_dcm2nii_LREN(InSubDir,OutputFolder,'T1',dcm2niiProgram);
 dataFiles  = pickfiles(OutputFolder,'.nii');
 
 for df = 1:size(dataFiles)
