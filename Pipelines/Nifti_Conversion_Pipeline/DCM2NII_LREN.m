@@ -109,8 +109,10 @@ try
                             end;
                         case 'other'
                             other2nii(InSubDir,Subj_OutputFolder,FolderNames{i},Sessionstr,SubjID,RepetFolders{k},dcm2niiProgram);
+                            nb_processed_files = nb_processed_files + 1;
                         case 'diff'
                             DWI2nii(InSubDir,Subj_OutputFolder,FolderNames{i},Sessionstr,SubjID,RepetFolders{k},dcm2niiProgram);
+                            nb_processed_files = nb_processed_files + 1;
                         case 'fMRI_dropout'
                             dicom_files = spm_select('FPListRec',InSubDir,'.*');
                             matlabbatch{1}.spm.util.import.dicom.data = cellstr(dicom_files); % Input Folder to be converted.
