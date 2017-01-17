@@ -1,10 +1,10 @@
 function protocol_names = get_protocol_names(ProtocolsFile,ProcessingSTep,MRIModality)
 
 %% Anne Ruef, Lester Melie-Garcia
-% LREN, CHUV. 
+% LREN, CHUV.
 % Lausanne, May 28th, 2014
 
-if isempty(ProtocolsFile) 
+if isempty(ProtocolsFile)
     [FileName,FilePath] = uigetfile('*.txt','Loading Protocols File ...');
     ProtocolsFile = [FilePath,FileName];
 end;
@@ -19,7 +19,7 @@ NL = length(C);
 protocol_names = '';
 ind = find(ismember(C,{ProcessingSTep}));
 if isempty(ind)
-    disp(['The ',ProcessingSTep,' does not defined in the Protocol file ....']);
+    disp(['The ',ProcessingSTep,' is not defined in the Protocol file ....']);
     return;
 end;
 
@@ -38,7 +38,7 @@ if (j2<=NL)&&(isempty(strfind(C{j2},'__')))
     protocol_names = char(C(j1+1:j2-1));
 else
     protocol_names = '';
-    disp(['For ',ProcessingSTep,' and ',MRIModality,' does not exist protocols ....']);
+    disp(['For ',ProcessingSTep,' and ',MRIModality,', protocols do not exist....']);
 end;
 
 end
@@ -55,7 +55,7 @@ while ~feof(fid)
        j = j + 1;
        C{j} = jline; %#ok<AGROW>
    end;
-end; 
+end;
 fclose(fid);
 
 end

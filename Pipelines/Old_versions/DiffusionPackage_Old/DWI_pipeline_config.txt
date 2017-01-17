@@ -1,3 +1,0 @@
-InputFolder = 'X:\USERS_BACKUP\aruef\NCCR\New_orig_data_conv\';
-ProtocolsFile = 'Protocols_definition.txt';
-OutputFolder = 'D:\Users DATA\Users\lester\NCCR_Data_Diffusion_Maps\';
