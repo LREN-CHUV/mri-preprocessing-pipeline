@@ -158,6 +158,7 @@ gre_field_mapping_1acq_rl
 gre_field_mapping_1acq_rl
 gre_field_mapping_1acq_rl_short
 gre_field_mapping_1acq_rl_short
+gre_field_mapping_1acq_rl_20ch
 [B1]
 al_B1mapping_v2d_short
 al_B1mapping_v2d_for1mmMPM
@@ -173,6 +174,7 @@ al_B1mapping_v2d
 al_B1mapping_v2d
 al_B1mapping_v2d_short
 al_B1mapping_v2d_short
+al_B1mapping_v2d_20ch
 [MT]
 mt_al_mtflash3d_v2l_1pt5mm
 mt_al_mtflash3d_v2l_1mm
@@ -188,6 +190,7 @@ mt_al_mtflash3d_v2l_1pt5mm
 mt_al_mtflash3d_v2l_xpace_800um
 mt_al_mtflash3d_v2l_xpace_1pt5mm
 mt_al_mtflash3d_v2l_xpace_1pt5mm
+mt_al_mtflash3d_v2l_PMC_1mm_thresholding_20ch
 [PD]
 pd_al_mtflash3d_v2l_1pt5mm
 pd_al_mtflash3d_v2l_1mm
@@ -203,6 +206,7 @@ pd_al_mtflash3d_v2l_1pt5mm
 pd_al_mtflash3d_v2l_xpace_800um_30echoes
 pd_al_mtflash3d_v2l_xpace_1pt5mm
 pd_al_mtflash3d_v2l_1pt5mm
+pd_al_mtflash3d_v2l_PMC_1mm_thresholding_20ch
 [T1]
 t1_al_mtflash3d_v2l_1pt5mm
 t1_al_mtflash3d_v2l_1mm
@@ -218,6 +222,7 @@ t1_al_mtflash3d_v2l_1pt5mm
 t1_al_mtflash3d_v2l_xpace_800um
 t1_al_mtflash3d_v2l_xpace_1pt5mm
 t1_al_mtflash3d_v2l_xpace_1pt5mm
+t1_al_mtflash3d_v2l_PMC_1mm_thresholding_20ch
 [Resolution]
 1.5mm
 1mm
@@ -233,6 +238,7 @@ t1_al_mtflash3d_v2l_xpace_1pt5mm
 800um
 1.5mm
 1.5mm
+1mm
 [diffusion]
 
 __MPMOutputs__
@@ -274,6 +280,66 @@ mt_al_mtflash3d_v2l_1pt5mm
 mt_al_mtflash3d_v2l_xpace_800um
 mt_al_mtflash3d_v2l_xpace_1pt5mm
 mt_al_mtflash3d_v2l_xpace_1pt5mm
+3 plane
+3D SAG
+AX T1
+AX T1 FLAIR
+AX T1 SE C
+AXIAL T1 3D MPRAGE
+Ax T1 FLAIR
+CORFLAIRr
+Cor FLAIR TI_2800ms
+FSPGR 3D SAG
+MPRAGE
+MPRAGE 2 ADNI
+MPRAGE ADNI
+MPRAGE GRAPPA
+MPRAGE GRAPPA 2
+MPRAGE GRAPPA2
+MPRAGE GRAPPA2adni
+MPRAGE GRAPPA_ND
+MPRAGE Repeat
+MPRAGE SAG
+MPRAGE T1 SAG
+MPRAGE w GRAPPA
+MPRAGE w GRAPPA 2
+MPRAGE_GRAPPA
+MPRAGE_GRAPPA_ADNI
+MPRAGEadni
+SAG 3D FSPGR BRAVO STRAIGHT
+SAG 3D SPGR
+SAG 3D T1
+SAG FSPGR 3D
+SAG FSPGR BRAVO
+SAG MPRAGE GRAPPA
+SAG MPRAGE GRAPPA2-NEW2016
+SAG MPRAGE GRAPPA_ND
+SAG SPGR
+SAG SPGR 3D
+SAG T1 3D FSPGR
+SAG T1 3D FSPGR 3RD REPEAT
+SAG T1 3D MPRAGE
+SAG T1 3DMPRAGE
+SAG T1 MPRAGE
+STRUC BRAVO SAG3D ARC
+STRUC T2FLAIR AX
+Sag MPRAGE GRAPPA
+Sag MPRAGE GRAPPA_ND
+Sag T1
+T1
+T1 REPEAT
+T1 Repeat
+T1W_3D_FFE AX
+axial spgr
+sT1W_3D_FFE
+sT1W_3D_ISO
+sT1W_3D_TFE
+sT2WPD_TSE
+sag
+sag 3D FSPGR BRAVO straight
+sag mprage
+t1_mpr_ns_sag_p2_iso
+tra_T1_MPRAGE
 __fMRI__
 [EPI]
 al_mepi2d_3mm
