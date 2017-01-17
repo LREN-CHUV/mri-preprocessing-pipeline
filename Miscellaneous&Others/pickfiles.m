@@ -1,5 +1,9 @@
 function filesf = pickfiles(directory0,filtand,filtor,filtnot)
 
+%% Pedro Valdes-Hernandez
+% Cuban Neuroscience Center
+% Havana, June 21st, 2005
+
 filesf = '';
 if iscell(directory0)
     directory0 = strvcat(directory0{:}); %#ok
@@ -50,29 +54,29 @@ filesf = deblank(filesf);
 function files = get_all(directory)
 
 % Pick all files in a folder
-% Pedro A Valdes-Hernandez 
+% Pedro A Valdes-Hernandez
 
 directory = deblank(directory);
 list = dirall(directory);
 files = cell(length(list),1);
 for i = 1:length(list)
-    if ~list(i).isdir 
+    if ~list(i).isdir
         files{i} = list(i).name;
     end
 end
 if ~isempty(list)
     files = strvcat(files{:}); %#ok
 else
-    files = []; 
+    files = [];
 end
 
 function list = dirall(folder,level)
 
-list = dir(folder); 
+list = dir(folder);
 if strcmp([list(1:2).name],'...')
     list([1 2]) = [];
 end
-for i = 1:length(list), 
+for i = 1:length(list),
     list(i).name = sprintf('%s%s%s',folder,filesep,list(i).name);
 end
 if nargin == 2 && level == 1, return; end
