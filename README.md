@@ -1,10 +1,10 @@
 
-[![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html)
+[![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html) [![CHUV](https://img.shields.io/badge/CHUV-LREN-AF4C64.svg)](https://www.unil.ch/lren/en/home.html)
 
 # MRI preprocesing pipeline
 
 ## Release process
- 
+
 This project is organised around two Git branches:
 
 * master: for normal development of the pipelines
@@ -49,7 +49,7 @@ you need to:
 
 Trusted release managers are currently (31/03/2017):
 
-* Ludovic Claude \<ludovic.claude54@googlemail.com\>, PGP key fingerprint 
+* Ludovic Claude \<ludovic.claude54@googlemail.com\>, PGP key fingerprint
 * Mirco Nasuti \<mirco.nasuti@chuv.ch\>, PGP key fingerprint C498B2898A53B394BECBDDDEED29A425D7F848B3
 
 ## License
