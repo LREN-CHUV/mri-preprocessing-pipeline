@@ -9,3 +9,4 @@
 * 16/01/2017 v1.2.0 and v1.2.1 - Ludovic Claude
 * 17/01/2017 v1.2.2 and v1.2.3 - Ludovic Claude
 * 31/03/2017 v1.2.4 and v1.2.5 - Mirco Nasuti
+* 31/03/2017 v1.2.6 - Mirco Nasuti
