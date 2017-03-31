@@ -340,6 +340,7 @@ sag 3D FSPGR BRAVO straight
 sag mprage
 t1_mpr_ns_sag_p2_iso
 tra_T1_MPRAGE
+T1_mprage
 __fMRI__
 [EPI]
 al_mepi2d_3mm

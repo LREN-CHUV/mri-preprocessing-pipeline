@@ -3,16 +3,16 @@ function success = NeuroMorphometric_pipeline(SubjID,InputDataFolder,LocalFolder
 % This function computes an individual Atlas based on the NeuroMorphometrics Atlas. This is based on the NeuroMorphometrics Toolbox.
 % This delivers three files: 1) Atlas File (*.nii); 2) Volumes of the Morphometric Atlas structures (*.txt); 3) Excel File (.xls) or *.csv containing
 % the volume, and globals plus Multiparametric Maps (R2*, R1, MT, PD) for each structure defined in the Subject Atlas. In case of anatomical images different
-% from Multiparametric Maps the outputs will be only the structure volumes. 
+% from Multiparametric Maps the outputs will be only the structure volumes.
 %
 %% Input Parameters:
 %  SubjID: Identifier of the subject (Subject's Folder name).
 %  InputDataFolder: Folder with subject data (full path). Based on LREN database, this folder contains Nifti data located in the server.
 %  LocalFolder: Local Folder where the Atlasing and output files generation process will be saved.
 %  AtlasingOutputFolder: Folder located in the Server, where the final MPMs files will be saved where all users have access.
-%  ProtocolsFile: File that provides the list of protocols needed for MPMs computation. (for instance: Protocols_definition.txt) 
+%  ProtocolsFile: File that provides the list of protocols needed for MPMs computation. (for instance: Protocols_definition.txt)
 %  TableFormat: Defines which format the Output Table will be saved. TableFormat = 'csv' : save in CSV format, TableFormat = 'xls': save in Excel SpreadSheet format. If it is not defined is asummed Excel format.
-%  TPM_Template : Template used for segmentation step in case the image is not segmented.
+%  TPM_Template : File name for the template used for segmentation step in case the image is not segmented.
 %
 %% Lester Melie Garcia
 % LREN, Lausanne
@@ -75,12 +75,12 @@ for i=1:Nsess
         end;
     else
         Anat_Folders = getListofFolders([Subj_OutputFolder,SessionFolders{i},filesep]);
-    end;    
+    end;
     for j=1:length(Anat_Folders)
         RepetitionFolders = getListofFolders([Subj_OutputFolder,SessionFolders{i},filesep,Anat_Folders{j}]); % Number of repetitions ...
         for r=1:length(RepetitionFolders)
             SubjectWorkingFolder = [Subj_OutputFolder,SessionFolders{i},filesep,Anat_Folders{j},filesep,RepetitionFolders{r}];
-            c1ImageFileName = pickfiles(SubjectWorkingFolder,{[filesep,'c1'];'.nii'},{filesep},{'Old_Segmentation'});  
+            c1ImageFileName = pickfiles(SubjectWorkingFolder,{[filesep,'c1'];'.nii'},{filesep},{'Old_Segmentation'});
             if isempty(c1ImageFileName)      % Checking if a gray matter segmentation file exists. If it does not exist a segmentation process is carried out.
                 AnatInputImage = pickfiles(SubjectWorkingFolder,{'.nii'},{filesep},{'Old_Segmentation'});
                 MPMs_Segmentation(AnatInputImage(1,:),TPM_Template);
@@ -91,8 +91,8 @@ for i=1:Nsess
             rc2ImageFileName = pickfiles(SubjectWorkingFolder,{[filesep,'rc2'];'.nii'},{filesep},{'Old_Segmentation'});
             c3ImageFileName = pickfiles(SubjectWorkingFolder,{[filesep,'c3'];'.nii'},{filesep},{'Old_Segmentation'});
             [OutputAtlasFile,OutputVolumeFile]= do_one_subject_with_segmentation(c1ImageFileName,c2ImageFileName,rc1ImageFileName,rc2ImageFileName, ...
-                                                                                 SubjectWorkingFolder,SubjectWorkingFolder);                                              
-            OutputCSVFile = [SubjectWorkingFolder,filesep,SubjID,'_Neuromorphics_Vols_MPMs_global_std_values',FileExt];            
+                                                                                 SubjectWorkingFolder,SubjectWorkingFolder);
+            OutputCSVFile = [SubjectWorkingFolder,filesep,SubjID,'_Neuromorphics_Vols_MPMs_global_std_values',FileExt];
             save_vols_MPMs_globals2csv_plus_sigma(OutputVolumeFile,OutputAtlasFile,SubjectWorkingFolder,OutputCSVFile,c1ImageFileName,c2ImageFileName,c3ImageFileName,TableFormat);
             %save_vols_MPMs_globals2csv(OutputVolumeFile,OutputAtlasFile,SubjectWorkingFolder,OutputCSVFile,c1ImageFileName,c2ImageFileName,c3ImageFileName);
             %save_vols_MPMs2csv(OutputVolumeFile,OutputAtlasFile,SubjectWorkingFolder,OutputCSVFile);
@@ -122,11 +122,11 @@ end
 function [MT_p,Nprot] = get_valid_Atlasing_Protocols(ProtocolsFile,DataFolder)
 
 %% Lester Melie-Garcia
-% LREN, CHUV. 
+% LREN, CHUV.
 % Lausanne, October 7th, 2015
 
 if ~strcmpi(DataFolder(end),filesep)
-    DataFolder = [DataFolder,filesep];    
+    DataFolder = [DataFolder,filesep];
 end;
 
 MT_p = cellstr(get_protocol_names(ProtocolsFile,'__ATLASING__','[STRUCTURAL]'));
@@ -170,4 +170,3 @@ for i=1:length(ind)
 end;
 
 end
-
