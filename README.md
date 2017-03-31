@@ -3,7 +3,9 @@
 
 # MRI preprocesing pipeline
 
-## Git branches
+## Release process
+ 
+This project is organised around two Git branches:
 
 * master: for normal development of the pipelines
 * deploy: for deployment of the pipelines to a Data Factory.
@@ -26,6 +28,29 @@ Add a signoff in file signoffs.md, then
 
 to add a signoff and allow deployment of the pipeline to the Data Factories.
 It is best practice to tag with signing the version ready for deployment with a release number.
+
+More information about GPG and verified Git commits can be found on this [Git signing guide](https://developers.yubico.com/PGP/Git_signing.html).
+
+After release, merge the changes on deploy branch back to master branch:
+
+```
+  git checkout master
+  git merge deploy
+```
+
+## Deployment
+
+As Git signing is used, to deploy a new version of mri-preprocessing-pipeline on a target computer,
+you need to:
+
+1. For the user running the pipelines (airflow user if you use the default Data Factory settings),
+   you need to create a PGP key.
+2. Then for each trusted release managers of this project, you need add trust to this PGP key.
+
+Trusted release managers are currently (31/03/2017):
+
+* Ludovic Claude \<ludovic.claude54@googlemail.com\>, PGP key fingerprint 
+* Mirco Nasuti \<mirco.nasuti@chuv.ch\>, PGP key fingerprint C498B2898A53B394BECBDDDEED29A425D7F848B3
 
 ## License
 
