@@ -23,9 +23,7 @@ success = -1;
 
 spm_jobman('initcfg');
 
-if ~strcmp(AtlasingOutputFolder(end),filesep)
-    AtlasingOutputFolder = [AtlasingOutputFolder,filesep];
-end;
+
 if ~strcmp(InputDataFolder(end),filesep)
     InputDataFolder = [InputDataFolder,filesep];
 end;
@@ -103,7 +101,7 @@ end;
 Out_List_Files = getAllFiles(Subj_OutputFolder);
 Reorganize_Files(Subj_OutputFolder,Ini_List_Files,Out_List_Files);
 
-backup_atlas_output(LocalFolder, AtlasingOutputFolder, SubjID, Subj_OutputFolder);
+backup_atlas_output(LocalFolder, AtlasingOutputFolder, SubjID, Subj_OutputFolder, Anat_Folders);
 
 end
 
@@ -164,7 +162,11 @@ end;
 end
 
 %% function copy atlas output to backup folder
-function backup_atlas_output(LocalFolder, AtlasingOutputFolder, SubjID, Subj_OutputFolder)
+function backup_atlas_output(LocalFolder, AtlasingOutputFolder, SubjID, Subj_OutputFolder, Anat_Folders)
+
+if ~isempty(AtlasingOutputFolder) & ~strcmp(AtlasingOutputFolder(end),filesep)
+    AtlasingOutputFolder = [AtlasingOutputFolder,filesep];
+end;
 
 if ~isempty(AtlasingOutputFolder) & ~strcmpi(AtlasingOutputFolder,LocalFolder)
     SubjOutputServerFolder = [AtlasingOutputFolder,SubjID];
