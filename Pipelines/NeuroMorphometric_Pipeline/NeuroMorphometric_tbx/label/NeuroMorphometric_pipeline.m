@@ -103,15 +103,7 @@ end;
 Out_List_Files = getAllFiles(Subj_OutputFolder);
 Reorganize_Files(Subj_OutputFolder,Ini_List_Files,Out_List_Files);
 
-if ~strcmpi(AtlasingOutputFolder,LocalFolder)
-    SubjOutputServerFolder = [AtlasingOutputFolder,SubjID];
-    if ~exist(SubjOutputServerFolder ,'dir')
-        mkdir(SubjOutputServerFolder);
-    end;
-    if ~isempty(Anat_Folders)
-        copyfile(Subj_OutputFolder,SubjOutputServerFolder);
-    end;
-end;
+backup_atlas_output(LocalFolder, AtlasingOutputFolder, SubjID, Subj_OutputFolder);
 
 end
 
@@ -167,6 +159,21 @@ flevel = cell2mat(sizeTree.level); % Folders level ...
 ind = find((flevel==3)&(mem==0));
 for i=1:length(ind)
     rmdir(sizeTree.name{ind(i)},'s');  % Removing de remaining empty folders ...
+end;
+
+end
+
+%% function copy atlas output to backup folder
+function backup_atlas_output(LocalFolder, AtlasingOutputFolder, SubjID, Subj_OutputFolder)
+
+if ~isempty(AtlasingOutputFolder) & ~strcmpi(AtlasingOutputFolder,LocalFolder)
+    SubjOutputServerFolder = [AtlasingOutputFolder,SubjID];
+    if ~exist(SubjOutputServerFolder ,'dir')
+        mkdir(SubjOutputServerFolder);
+    end;
+    if ~isempty(Anat_Folders)
+        copyfile(Subj_OutputFolder,SubjOutputServerFolder);
+    end;
 end;
 
 end
