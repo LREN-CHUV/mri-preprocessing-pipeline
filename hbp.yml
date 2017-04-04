@@ -1,0 +1,66 @@
+description: "Pre-processing pipelines for MRI neuroimaging"
+
+long_description: |
+  TODO
+
+
+authors:
+  - author: John Ashburner,
+    author_email: []
+    organisation: FIL, UCL
+    #organisation_badge: https://img.shields.io/badge/CHUV-LREN-AF4C64.svg
+  - author: Lester Melie-Garcia
+    author_email: []
+    organisation: LREN-CHUV
+    organisation_badge: https://img.shields.io/badge/CHUV-LREN-AF4C64.svg
+
+platform: MIP
+component:
+  mip_building_block: data-factory
+  nature: pipeline
+
+license:
+  name: GNU Affero GPL 3.0
+  badge: https://img.shields.io/badge/license-AGPL--3.0-blue.svg
+  url: https://github.com/LREN-CHUV/mri-preprocessing-pipeline/blob/master/LICENSE
+
+code_repositories:
+  - name: chuv-gitlab/HBPMedical
+    visibility: private
+    url: https://___.chuv.ch/data-factory/mri-preprocessing-pipeline/
+    git_clone: https://___.chuv.ch/data-factory/mri-preprocessing-pipeline.git
+  - name: github/LREN-CHUV
+    visibility: public
+    url: https://github.io/LREN-CHUV/mri-preprocessing-pipeline/
+    git_clone: https://github.io/LREN-CHUV/mri-preprocessing-pipeline.git
+  - name: github/HBPMedical
+    visibility: public
+    url: https://github.io/HBPMedical/mri-preprocessing-pipeline/
+    git_clone: https://github.io/HBPMedical/mri-preprocessing-pipeline.git
+
+code_quality_checks: {}
+
+testing:
+  unit_testing: []
+
+release_management:
+  current_version: 1.2.6
+  current_code_release: https://github.com/HBPMedical/mri-preprocessing-pipeline/archive/1.2.6.zip
+  current_binary_release: https://pypi.python.org/pypi/mri-preprocessing-pipeline/1.2.6
+  release_script: 'publish.sh'
+
+continuous_integration: []
+
+distribution:
+  git:
+    url: https://github.com/HBPMedical/data-factory-airflow-dags.git
+
+planning:
+  github:
+    name: Issues on Github
+    url: https://github.com/LREN-CHUV/mri-preprocessing-pipeline/issues
+
+related_projects:
+  - name: data-factory-airflow-dags
+    mip_building_block: data-factory
+    relationship: other-depends-on
