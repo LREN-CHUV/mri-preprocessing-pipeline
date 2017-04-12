@@ -1,0 +1,136 @@
+3rd Ventricle,3rd Ventricle
+4th Ventricle,4th Ventricle
+Right Accumbens Area,Right Accumbens Area
+Left Accumbens Area,Left Accumbens Area
+Right Amygdala,Right Amygdala
+Left Amygdala,Left Amygdala
+Brain Stem,Brain Stem
+Right Caudate,Right Caudate
+Left Caudate,Left Caudate
+Right Cerebellum Exterior,Right Cerebellum Exterior
+Left Cerebellum Exterior,Left Cerebellum Exterior
+Right Cerebellum WM,Right Cerebellum White Matter
+Left Cerebellum WM,Left Cerebellum White Matter
+Right Cerebral WM,Right Cerebral White Matter
+Left Cerebral WM,Left Cerebral White Matter
+CSF,CSF
+Right Hippocampus,Right Hippocampus
+Left Hippocampus,Left Hippocampus
+Right Inf Lat Vent,Right Inf Lat Vent
+Left Inf Lat Vent,Left Inf Lat Vent
+Right Lateral Ventricle,Right Lateral Ventricle
+Left Lateral Ventricle,Left Lateral Ventricle
+Right Pallidum,Right Pallidum
+Left Pallidum,Left Pallidum
+Right Putamen,Right Putamen
+Left Putamen,Left Putamen
+Right Thalamus Proper,Right Thalamus Proper
+Left Thalamus Proper,Left Thalamus Proper
+Right Ventral DC,Right Ventral DC
+Left Ventral DC,Left Ventral DC
+Right vessel,Right vessel
+Left vessel,Left vessel
+Optic Chiasm,Optic Chiasm
+Cerebellar VL I-V,Cerebellar Vermal Lobules I-V
+Cerebellar VL VI-VII,Cerebellar Vermal Lobules VI-VII
+Cerebellar VL VIII-X,Cerebellar Vermal Lobules VIII-X
+Left Basal Forebrain,Left Basal Forebrain
+Right Basal Forebrain,Right Basal Forebrain
+Right AcgG,Right ACgG anterior cingulate gyrus
+Left ACgG ,Left ACgG anterior cingulate gyrus
+Right AIns ,Right AIns anterior insula
+Left Ains,Left AIns anterior insula
+Right AorG,Right AOrG anterior orbital gyrus
+Left AorG,Left AOrG anterior orbital gyrus
+Right AnG,Right AnG angular gyrus
+Left AnG  ,Left AnG angular gyrus
+Right Calc,Right Calc calcarine cortex
+Left Calc,Left Calc calcarine cortex
+Right CO,Right CO central operculum
+Left CO,Left CO central operculum
+Right Cun,Right Cun cuneus
+Left Cun,Left Cun cuneus
+Right Ent,Right Ent entorhinal area
+Left Ent,Left Ent entorhinal area
+Right FO,Right FO frontal operculum
+Left FO,Left FO frontal operculum
+Right FRP,Right FRP frontal pole
+Left FRP,Left FRP frontal pole
+Right FuG,Right FuG fusiform gyrus
+Left FuG,Left FuG fusiform gyrus
+Right Gre,Right GRe gyrus rectus
+Left Gre,Left GRe gyrus rectus
+Right IOG,Right IOG inferior occipital gyrus
+Left IOG,Left IOG inferior occipital gyrus
+Right ITG,Right ITG inferior temporal gyrus
+Left ITG,Left ITG inferior temporal gyrus
+Right LiG,Right LiG lingual gyrus
+Left LiG,Left LiG lingual gyrus
+Right LorG,Right LOrG lateral orbital gyrus
+Left LorG,Left LOrG lateral orbital gyrus
+Right McgG,Right MCgG middle cingulate gyrus
+Left McgG,Left MCgG middle cingulate gyrus
+Right MFC,Right MFC medial frontal cortex
+Left MFC,Left MFC medial frontal cortex
+Right MFG,Right MFG middle frontal gyrus
+Left MFG,Left MFG middle frontal gyrus
+Right MOG,Right MOG middle occipital gyrus
+Left MOG,Left MOG middle occipital gyrus
+Right MorG,Right MOrG medial orbital gyrus
+Left MorG,Left MOrG medial orbital gyrus
+Right MpoG,Right MPoG postcentral gyrus medial segment
+Left MpoG,Left MPoG postcentral gyrus medial segment
+Right MprG,Right MPrG precentral gyrus medial segment
+Left MprG,Left MPrG precentral gyrus medial segment
+Right MSFG,Right MSFG superior frontal gyrus medial segment
+Left MSFG,Left MSFG superior frontal gyrus medial segment
+Right MTG,Right MTG middle temporal gyrus
+Left MTG,Left MTG middle temporal gyrus
+Right OCP,Right OCP occipital pole
+Left OCP,Left OCP occipital pole
+Right OfuG,Right OFuG occipital fusiform gyrus
+Left OfuG,Left OFuG occipital fusiform gyrus
+Right OpIFG,Right OpIFG opercular part of the inferior frontal gyrus
+Left OpIFG,Left OpIFG opercular part of the inferior frontal gyrus
+Right OrIFG,Right OrIFG orbital part of the inferior frontal gyrus
+Left OrIFG,Left OrIFG orbital part of the inferior frontal gyrus
+Right PcgG,Right PCgG posterior cingulate gyrus
+Left PcgG,Left PCgG posterior cingulate gyrus
+Right Pcu,Right PCu precuneus
+Left Pcu,Left PCu precuneus
+Right PHG,Right PHG parahippocampal gyrus
+Left PHG,Left PHG parahippocampal gyrus
+Right Pins,Right PIns posterior insula
+Left Pins,Left PIns posterior insula
+Right PO,Right PO parietal operculum
+Left PO,Left PO parietal operculum
+Right PoG,Right PoG postcentral gyrus
+Left PoG,Left PoG postcentral gyrus
+Right PorG,Right POrG posterior orbital gyrus
+Left PorG,Left POrG posterior orbital gyrus
+Right PP,Right PP planum polare
+Left PP,Left PP planum polare
+Right PrG,Right PrG precentral gyrus
+Left PrG,Left PrG precentral gyrus
+Right PT,Right PT planum temporale
+Left PT,Left PT planum temporale
+Right SCA,Right SCA subcallosal area
+Left SCA,Left SCA subcallosal area
+Right SFG,Right SFG superior frontal gyrus
+Left SFG,Left SFG superior frontal gyrus
+Right SMC,Right SMC supplementary motor cortex
+Left SMC,Left SMC supplementary motor cortex
+Right SMG,Right SMG supramarginal gyrus
+Left SMG,Left SMG supramarginal gyrus
+Right SOG,Right SOG superior occipital gyrus
+Left SOG,Left SOG superior occipital gyrus
+Right SPL,Right SPL superior parietal lobule
+Left SPL,Left SPL superior parietal lobule
+Right STG,Right STG superior temporal gyrus
+Left STG,Left STG superior temporal gyrus
+Right TMP,Right TMP temporal pole
+Left TMP,Left TMP temporal pole
+Right TrIFG,Right TrIFG triangular part of the inferior frontal gyrus
+Left TrIFG,Left TrIFG triangular part of the inferior frontal gyrus
+Right TTG,Right TTG transverse temporal gyrus
+Left TTG,Left TTG transverse temporal gyrus
