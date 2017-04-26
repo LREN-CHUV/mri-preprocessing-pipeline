@@ -14,3 +14,4 @@
 * 04/04/2017 v1.2.8 - Mirco Nasuti
 * 12/04/2017 v1.2.9 - Mirco Nasuti
 * 20/04/2017 v1.2.10 - Mirco Nasuti
+* 26/04/2017 v1.2.11 - Mirco Nasuti
