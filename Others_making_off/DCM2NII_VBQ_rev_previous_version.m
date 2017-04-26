@@ -86,9 +86,6 @@ for j=1:Ns
                         matlabbatch{1}.spm.util.import.dicom.data = cellstr(dicom_files); %#ok % Input Folder to be converted.
                         spm_jobman('run',matlabbatch);
                         OrgOutputFolder = Reorg_Nifti(FolderNames{i},OutputSessionFolder,TempOutputSessionFolder,RepetFolders{k});
-                        if isfield(filehdr{1}, 'CSASeriesHeaderInfo')&&(~strcmpi(which_prot,'other'))
-                            VBQ_mosaic2nii_correction(InSubDir,OrgOutputFolder);
-                        end;
                     case 'diff'
                         DWI2nii(InSubDir,Subj_OutputFolder,FolderNames{i},Sessionstr,SubjID,RepetFolders{k});
                     case 'other'

@@ -104,9 +104,6 @@ try
                             spm_jobman('run',matlabbatch);
                             nb_processed_files = nb_processed_files + 1;
                             OrgOutputFolder = Reorg_Nifti(FolderNames{i},OutputSessionFolder,TempOutputSessionFolder,RepetFolders{k});
-                            if isfield(filehdr{1}, 'CSASeriesHeaderInfo')&&(~strcmpi(which_prot,'other'))
-                                VBQ_mosaic2nii_correction(InSubDir,OrgOutputFolder);
-                            end;
                         case 'other'
                             other2nii(InSubDir,Subj_OutputFolder,FolderNames{i},Sessionstr,SubjID,RepetFolders{k},dcm2niiProgram);
                             nb_processed_files = nb_processed_files + 1;
