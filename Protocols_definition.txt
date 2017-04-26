@@ -263,6 +263,7 @@ t1_mprage_tra_p2_iso
 Anatomic_MT
 __ATLASING__
 [STRUCTURAL]
+MPR1
 MPRAGE_P3
 t1_mprage_tra_p2_iso
 Anatomic_MT
