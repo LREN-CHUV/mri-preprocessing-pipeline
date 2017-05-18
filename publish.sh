@@ -31,7 +31,7 @@ select_part() {
   esac
 }
 
-if test -z "(git rev-list --max-count 1 deploy..master)"; then
+if test -z "$(git rev-list --max-count 1 deploy..master)"; then
   git merge --no-ff master
   latest_version=$(git describe --abbrev=00 || \
     (bumpversion --dry-run --list patch | grep current_version | sed -r s,"^.*=",,) || echo '0.0.1')
@@ -67,6 +67,10 @@ if test -z "(git rev-list --max-count 1 deploy..master)"; then
   git commit -S -m "Signoff" signoffs.md
   # Bumpversion v0.5.3 does not support annotated tags nor signed tags
   git tag -s  -a -m "Signoff from $USER" "$updated_version"
+else
+  echo "You need to merge deploy branch with master branch"
+  echo "git merge master"
+  exit 1
 fi
 
 git push origin deploy
