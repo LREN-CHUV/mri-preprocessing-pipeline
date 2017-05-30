@@ -28,8 +28,10 @@ try
     if ~strcmp(OutputFolder(end),filesep)
         OutputFolder = [OutputFolder,filesep];
     end;
-    if ~strcmp(NiFti_Server_OutputFolder(end),filesep)
-        NiFti_Server_OutputFolder = [NiFti_Server_OutputFolder,filesep];
+    if ~ isempty(NiFti_Server_OutputFolder)
+      if ~strcmp(NiFti_Server_OutputFolder(end),filesep)
+          NiFti_Server_OutputFolder = [NiFti_Server_OutputFolder,filesep];
+      end;
     end;
     if ~strcmp(SubjectFolder(end),filesep)
         SubjectFolder = [SubjectFolder,filesep];
@@ -125,8 +127,12 @@ try
         end;
         rmdir(TempOutput,'s');
     end;
-    mkdir(NiFti_Server_OutputFolder,SubjID);
-    copyfile(Subj_OutputFolder,[NiFti_Server_OutputFolder,SubjID]);
+
+    if ~ isempty(NiFti_Server_OutputFolder)
+      mkdir(NiFti_Server_OutputFolder,SubjID);
+      copyfile(Subj_OutputFolder,[NiFti_Server_OutputFolder,SubjID]);
+    end;
+
     isDone = nb_processed_files;
 catch ME  %#ok
     warning(ME.message);
