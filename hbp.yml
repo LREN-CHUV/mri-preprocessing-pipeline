@@ -44,16 +44,16 @@ testing:
   unit_testing: []
 
 release_management:
-  current_version: 1.2.6
-  current_code_release: https://github.com/HBPMedical/mri-preprocessing-pipeline/archive/1.2.6.zip
-  current_binary_release: https://pypi.python.org/pypi/mri-preprocessing-pipeline/1.2.6
+  current_version: 1.2.13
+  current_code_release: https://github.com/HBPMedical/mri-preprocessing-pipeline/archive/1.2.13.zip
+  current_binary_release: https://pypi.python.org/pypi/mri-preprocessing-pipeline/1.2.13
   release_script: 'publish.sh'
 
 continuous_integration: []
 
 distribution:
   git:
-    url: https://github.com/HBPMedical/data-factory-airflow-dags.git
+    url: https://github.com/HBPMedical/mri-preprocessing-pipeline.git
 
 planning:
   github:
