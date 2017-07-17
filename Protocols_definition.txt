@@ -343,6 +343,14 @@ t1_mpr_ns_sag_p2_iso
 tra_T1_MPRAGE
 T1_mprage
 T1W sag
+T1W_SE
+Ax T1 SE memp
+Ax T1 SE memp mdc
+Ax T1 SE +c
+cor T1 SE memp mdc
+Cor T1 SE +C
+Sag T1 SE memp
+Sag T1 SE +c
 __fMRI__
 [EPI]
 al_mepi2d_3mm
