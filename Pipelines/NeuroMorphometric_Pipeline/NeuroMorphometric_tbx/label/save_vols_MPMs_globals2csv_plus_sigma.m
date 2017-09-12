@@ -9,7 +9,7 @@ function XLS_Table = save_vols_MPMs_globals2csv_plus_sigma(VolumeFile,AtlasFile,
 %       GM_File   : Gray matter tissue classification File (example: c1*.nii file from SPM)
 %       WM_File   : White matter tissue classification File (example: c2*.nii file from SPM)
 %       CSF_File   : Cerebral Spinal Fluid (CSF) tissue classification File (example: c3*.nii file from SPM)
-%      TableFormat: Defines which format the Output Table will be saved. TableFormat = 'csv' : save in CSV format, TableFormat = 'xls': save in Excel SpreadSheet format. 
+%      TableFormat: Defines which format the Output Table will be saved. TableFormat = 'csv' : save in CSV format, TableFormat = 'xls': save in Excel SpreadSheet format.
 %                   If this is not defined is asummed Excel format.
 %
 %% Output Parameters:
@@ -44,11 +44,26 @@ XLS_Table(2:end,1) = StructNames;
 SCodes =  cell2mat(SCodes);
 Vols_raw = load(VolumeFile); Vols = Vols_raw(SCodes);
 XLS_Table(2:end,2) = mat2cell(Vols,ones(size(Vols,1),1));
+
+V_GM = spm_vol(GM_File); voxvol = abs(det(V_GM.mat(1:3,1:3)));
+I_GM =  spm_read_vols(V_GM);
+I_WM =  spm_read_vols(spm_vol(WM_File));
+if ~isempty(CSF_File)
+    I_CSF =  spm_read_vols(spm_vol(CSF_File));
+    %% Adding Intracraneal Volume
+    %TIV = (I_GM + I_WM + I_CSF)>0.1;
+    TIV = I_GM + I_WM + I_CSF;
+    TIV_Nvox = sum(TIV(:));
+    TIV = voxvol*TIV_Nvox/1000; % in cm3
+else
+    TIV = NaN;
+end;
+
 R2s_Image = pickfiles(MPMFolder(1:end-1),{'_R2s.nii'});
 if ~isempty(R2s_Image)
     I_R2s =  spm_read_vols(spm_vol(R2s_Image(1,:)));
 end;
-MT_Image = pickfiles(MPMFolder(1:end-1),{'_MT.nii'});
+MT_Image = pickfiles(MPMFolder(1:end-1),{'_MT.nii'},{filesep},{[filesep,'c1'],[filesep,'c2'],[filesep,'c3'],[filesep,'rc1'],[filesep,'rc2'],[filesep,'iy'],[filesep,'y'],'label'});
 if ~isempty(MT_Image)
     I_MT =  spm_read_vols(spm_vol(MT_Image(1,:)));
 end;
@@ -60,6 +75,7 @@ R1_Image = pickfiles(MPMFolder(1:end-1),{'_R1.nii'});
 if ~isempty(R1_Image)
     I_R1 =  spm_read_vols(spm_vol(R1_Image(1,:)));
 end;
+
 if ~isempty(R2s_Image)||~isempty(MT_Image)||~isempty(PD_Image)||~isempty(R1_Image)
     MPMs_mat = zeros(NStruct,8);
     Nvoxels = cell(NStruct,1);
@@ -69,6 +85,7 @@ if ~isempty(R2s_Image)||~isempty(MT_Image)||~isempty(PD_Image)||~isempty(R1_Imag
         Nvoxels{i} = nnz(double(ind));
         if ~isempty(R2s_Image)
             if Nvoxels{i}~=0
+                %I_R2s = I_R2s.*I_GM;
                 MPMs_mat(i,1) = mean(I_R2s(ind));
                 MPMs_mat(i,2) = std(I_R2s(ind));
             else
@@ -78,6 +95,7 @@ if ~isempty(R2s_Image)||~isempty(MT_Image)||~isempty(PD_Image)||~isempty(R1_Imag
         end;
         if ~isempty(MT_Image)
             if Nvoxels{i}~=0
+                %I_MT = I_MT.*I_GM;
                 MPMs_mat(i,3) = mean(I_MT(ind));
                 MPMs_mat(i,4) = std(I_MT(ind));
             else
@@ -87,6 +105,7 @@ if ~isempty(R2s_Image)||~isempty(MT_Image)||~isempty(PD_Image)||~isempty(R1_Imag
         end;
         if ~isempty(PD_Image)
             if Nvoxels{i}~=0
+                %I_PD = I_PD.*I_GM;
                 MPMs_mat(i,5) = mean(I_PD(ind));
                 MPMs_mat(i,6) = std(I_PD(ind));
             else
@@ -96,6 +115,7 @@ if ~isempty(R2s_Image)||~isempty(MT_Image)||~isempty(PD_Image)||~isempty(R1_Imag
         end;
         if ~isempty(R1_Image)
             if Nvoxels{i}~=0
+                %I_R1 = I_R1.*I_GM;
                 MPMs_mat(i,7) = mean(I_R1(ind));
                 MPMs_mat(i,8) = std(I_R1(ind));
             else
@@ -104,15 +124,7 @@ if ~isempty(R2s_Image)||~isempty(MT_Image)||~isempty(PD_Image)||~isempty(R1_Imag
             end
         end;
     end;
-    
-    %% Adding Intracraneal Volume
-    V_GM = spm_vol(GM_File); voxvol = abs(det(V_GM.mat(1:3,1:3)));
-    I_GM =  spm_read_vols(V_GM);
-    I_WM =  spm_read_vols(spm_vol(WM_File));
-    I_CSF =  spm_read_vols(spm_vol(CSF_File));
-    TIV = (I_GM + I_WM + I_CSF)>0.1;
-    TIV_Nvox = sum(TIV(:));
-    TIV = voxvol*TIV_Nvox/1000; % in cm3
+
     % ICV_Table = cell(2,1);
     % ICV_Table{1,1} = 'Intracraneal Volume(cm3)';
     % ICV_Table{2,1} = ICV;
@@ -121,7 +133,7 @@ if ~isempty(R2s_Image)||~isempty(MT_Image)||~isempty(PD_Image)||~isempty(R1_Imag
     MPMs_mat = mat2cell(MPMs_mat,ones(size(MPMs_mat,1),1),ones(size(MPMs_mat,2),1)); %#ok
     MPMs_mat = horzcat(MPMs_mat,Nvoxels,Vol_Normalized);
     XLS_Table(2:end,3:end) = MPMs_mat;
-    
+
     %% Adding White Matter Stats
     WM_StructNames = getNeuromorphoWhiteMatter;
     WM_Codes = getStructCodes(StructNames,SCodes,WM_StructNames);
@@ -153,11 +165,11 @@ if ~isempty(R2s_Image)||~isempty(MT_Image)||~isempty(PD_Image)||~isempty(R1_Imag
     GM_R_PD_std  = std(I_PD(ind_GM_R)) ; GM_L_PD_std = std(I_PD(ind_GM_L))  ; GM_total_PD_std = std(I_PD(ind_GM_all));
     GM_R_R1  = mean(I_R1(ind_GM_R)) ; GM_L_R1 = mean(I_R1(ind_GM_L))  ; GM_total_R1 = mean(I_R1(ind_GM_all));
     GM_R_R1_std  = std(I_R1(ind_GM_R)) ; GM_L_R1_std = std(I_R1(ind_GM_L))  ; GM_total_R1_std = std(I_R1(ind_GM_all));
-    
+
     GM_total_Vol_norm = GM_total_Vol/TIV; GM_R_Vol_norm = GM_R_Vol/TIV; GM_L_Vol_norm=GM_L_Vol/TIV;
     WM_total_Vol_norm = WM_total_Vol/TIV;
     %% Globals Table
-    
+
     GT = [GM_total_Vol,GM_total_R2s,GM_total_R2s_std,GM_total_MT,GM_total_MT_std,GM_total_PD,GM_total_PD_std,GM_total_R1,GM_total_R1_std,GM_total_Nvox,GM_total_Vol_norm
         GM_R_Vol    ,GM_R_R2s    ,GM_R_R2s_std    ,GM_R_MT    ,GM_R_MT_std    ,GM_R_PD    ,GM_R_PD_std    ,GM_R_R1    ,GM_R_R1_std    ,GM_R_Nvox    ,GM_R_Vol_norm
         GM_L_Vol    ,GM_L_R2s    ,GM_L_R2s_std    ,GM_L_MT    ,GM_L_MT_std    ,GM_L_PD    ,GM_L_PD_std    ,GM_L_R1    ,GM_L_R1_std    ,GM_L_Nvox    ,GM_L_Vol_norm
@@ -173,10 +185,12 @@ if ~isempty(R2s_Image)||~isempty(MT_Image)||~isempty(PD_Image)||~isempty(R1_Imag
     %       WM_R_Vol    ,WM_R_R2s    ,WM_R_MT    ,WM_R_PD    ,WM_R_R1    ,WM_R_Nvox
     %       WM_L_Vol    ,WM_L_R2s    ,WM_L_MT    ,WM_L_PD    ,WM_L_R1    ,WM_L_Nvox];
     Globals_Table(2:end,2:end) = mat2cell(GT,ones(size(GT,1),1),ones(size(GT,2),1)); %#ok
-    
+
     XLS_Table = vertcat(XLS_Table,Globals_Table(2:end,:));  % Table with all MPMs plus structures volumes.
 else
     XLS_Table=XLS_Table(:,1:2); % Taking only name of the structures and volume.
+    TIV_SubTable = [{'Intracraneal'},{TIV}];
+    XLS_Table = [XLS_Table(:,1:2);TIV_SubTable];
 end;
 
 if strcmpi(TableFormat,'xls')
@@ -204,10 +218,10 @@ StructNames = {'3rd Ventricle'
     'Left Caudate'
     'Right Cerebellum Exterior'
     'Left Cerebellum Exterior'
-    'Right Cerebellum WM'
-    'Left Cerebellum WM'
-    'Right Cerebral WM'
-    'Left Cerebral WM'
+    'Right Cerebellum White Matter'
+    'Left Cerebellum White Matter'
+    'Right Cerebral White Matter'
+    'Left Cerebral White Matter'
     'CSF'
     'Right Hippocampus'
     'Left Hippocampus'
@@ -226,109 +240,109 @@ StructNames = {'3rd Ventricle'
     'Right vessel'
     'Left vessel'
     'Optic Chiasm'
-    'Cerebellar VL I-V'
-    'Cerebellar VL VI-VII'
-    'Cerebellar VL VIII-X'
+    'Cerebellar Vermal Lobules I-V'
+    'Cerebellar Vermal Lobules VI-VII'
+    'Cerebellar Vermal Lobules VIII-X'
     'Left Basal Forebrain'
     'Right Basal Forebrain'
-    'Right AcgG'
-    'Left ACgG'
-    'Right AIns'
-    'Left Ains'
-    'Right AorG'
-    'Left AorG'
-    'Right AnG'
-    'Left AnG'
-    'Right Calc'
-    'Left Calc'
-    'Right CO'
-    'Left CO'
-    'Right Cun'
-    'Left Cun'
-    'Right Ent'
-    'Left Ent'
-    'Right FO'
-    'Left FO'
-    'Right FRP'
-    'Left FRP'
-    'Right FuG'
-    'Left FuG'
-    'Right Gre'
-    'Left Gre'
-    'Right IOG'
-    'Left IOG'
-    'Right ITG'
-    'Left ITG'
-    'Right LiG'
-    'Left LiG'
-    'Right LorG'
-    'Left LorG'
-    'Right McgG'
-    'Left McgG'
-    'Right MFC'
-    'Left MFC'
-    'Right MFG'
-    'Left MFG'
-    'Right MOG'
-    'Left MOG'
-    'Right MorG'
-    'Left MorG'
-    'Right MpoG'
-    'Left MpoG'
-    'Right MprG'
-    'Left MprG'
-    'Right MSFG'
-    'Left MSFG'
-    'Right MTG'
-    'Left MTG'
-    'Right OCP'
-    'Left OCP'
-    'Right OfuG'
-    'Left OfuG'
-    'Right OpIFG'
-    'Left OpIFG'
-    'Right OrIFG'
-    'Left OrIFG'
-    'Right PcgG'
-    'Left PcgG'
-    'Right Pcu'
-    'Left Pcu'
-    'Right PHG'
-    'Left PHG'
-    'Right Pins'
-    'Left Pins'
-    'Right PO'
-    'Left PO'
-    'Right PoG'
-    'Left PoG'
-    'Right PorG'
-    'Left PorG'
-    'Right PP'
-    'Left PP'
-    'Right PrG'
-    'Left PrG'
-    'Right PT'
-    'Left PT'
-    'Right SCA'
-    'Left SCA'
-    'Right SFG'
-    'Left SFG'
-    'Right SMC'
-    'Left SMC'
-    'Right SMG'
-    'Left SMG'
-    'Right SOG'
-    'Left SOG'
-    'Right SPL'
-    'Left SPL'
-    'Right STG'
-    'Left STG'
-    'Right TMP'
-    'Left TMP'
-    'Right TrIFG'
-    'Left TrIFG'
-    'Right TTG'
-    'Left TTG'};
+    'Right ACgG anterior cingulate gyrus'
+    'Left ACgG anterior cingulate gyrus'
+    'Right AIns anterior insula'
+    'Left AIns anterior insula'
+    'Right AOrG anterior orbital gyrus'
+    'Left AOrG anterior orbital gyrus'
+    'Right AnG angular gyrus'
+    'Left AnG angular gyrus'
+    'Right Calc calcarine cortex'
+    'Left Calc calcarine cortex'
+    'Right CO central operculum'
+    'Left CO central operculum'
+    'Right Cun cuneus'
+    'Left Cun cuneus'
+    'Right Ent entorhinal area'
+    'Left Ent entorhinal area'
+    'Right FO frontal operculum'
+    'Left FO frontal operculum'
+    'Right FRP frontal pole'
+    'Left FRP frontal pole'
+    'Right FuG fusiform gyrus'
+    'Left FuG fusiform gyrus'
+    'Right GRe gyrus rectus'
+    'Left GRe gyrus rectus'
+    'Right IOG inferior occipital gyrus'
+    'Left IOG inferior occipital gyrus'
+    'Right ITG inferior temporal gyrus'
+    'Left ITG inferior temporal gyrus'
+    'Right LiG lingual gyrus'
+    'Left LiG lingual gyrus'
+    'Right LOrG lateral orbital gyrus'
+    'Left LOrG lateral orbital gyrus'
+    'Right MCgG middle cingulate gyrus'
+    'Left MCgG middle cingulate gyrus'
+    'Right MFC medial frontal cortex'
+    'Left MFC medial frontal cortex'
+    'Right MFG middle frontal gyrus'
+    'Left MFG middle frontal gyrus'
+    'Right MOG middle occipital gyrus'
+    'Left MOG middle occipital gyrus'
+    'Right MOrG medial orbital gyrus'
+    'Left MOrG medial orbital gyrus'
+    'Right MPoG postcentral gyrus medial segment'
+    'Left MPoG postcentral gyrus medial segment'
+    'Right MPrG precentral gyrus medial segment'
+    'Left MPrG precentral gyrus medial segment'
+    'Right MSFG superior frontal gyrus medial segment'
+    'Left MSFG superior frontal gyrus medial segment'
+    'Right MTG middle temporal gyrus'
+    'Left MTG middle temporal gyrus'
+    'Right OCP occipital pole'
+    'Left OCP occipital pole'
+    'Right OFuG occipital fusiform gyrus'
+    'Left OFuG occipital fusiform gyrus'
+    'Right OpIFG opercular part of the inferior frontal gyrus'
+    'Left OpIFG opercular part of the inferior frontal gyrus'
+    'Right OrIFG orbital part of the inferior frontal gyrus'
+    'Left OrIFG orbital part of the inferior frontal gyrus'
+    'Right PCgG posterior cingulate gyrus'
+    'Left PCgG posterior cingulate gyrus'
+    'Right PCu precuneus'
+    'Left PCu precuneus'
+    'Right PHG parahippocampal gyrus'
+    'Left PHG parahippocampal gyrus'
+    'Right PIns posterior insula'
+    'Left PIns posterior insula'
+    'Right PO parietal operculum'
+    'Left PO parietal operculum'
+    'Right PoG postcentral gyrus'
+    'Left PoG postcentral gyrus'
+    'Right POrG posterior orbital gyrus'
+    'Left POrG posterior orbital gyrus'
+    'Right PP planum polare'
+    'Left PP planum polare'
+    'Right PrG precentral gyrus'
+    'Left PrG precentral gyrus'
+    'Right PT planum temporale'
+    'Left PT planum temporale'
+    'Right SCA subcallosal area'
+    'Left SCA subcallosal area'
+    'Right SFG superior frontal gyrus'
+    'Left SFG superior frontal gyrus'
+    'Right SMC supplementary motor cortex'
+    'Left SMC supplementary motor cortex'
+    'Right SMG supramarginal gyrus'
+    'Left SMG supramarginal gyrus'
+    'Right SOG superior occipital gyrus'
+    'Left SOG superior occipital gyrus'
+    'Right SPL superior parietal lobule'
+    'Left SPL superior parietal lobule'
+    'Right STG superior temporal gyrus'
+    'Left STG superior temporal gyrus'
+    'Right TMP temporal pole'
+    'Left TMP temporal pole'
+    'Right TrIFG triangular part of the inferior frontal gyrus'
+    'Left TrIFG triangular part of the inferior frontal gyrus'
+    'Right TTG transverse temporal gyrus'
+    'Left TTG transverse temporal gyrus'};
 
 StructCodes = {4;11;23;30;31;32;35;36;37;38;39;40;41;44;45;46;47;48;49;50;51;52;55;56;57;58;59;60;61;62;63;64;69;71; ...
                72;73;75;76;100;101;102;103;104;105;106;107;108;109;112;113;114;115;116;117;118;119;120;121;122;123;  ...
@@ -340,17 +354,17 @@ end
 %%
 function StructNames = getNeuromorphoWhiteMatter
 
-StructNames = {'Right Cerebral WM';'Left Cerebral WM'};
-    
+StructNames = {'Right Cerebral White Matter';'Left Cerebral White Matter'};
+
 end
 
-%% 
+%%
 function StructCodes = getStructCodes(FullStructNames,FullStructCodes,InputStructNames)
 
 N = length(InputStructNames);
 StructCodes = cell(N,1);
 for i=1:N
-    StructCodes{i} = FullStructCodes(ismember(FullStructNames,InputStructNames(i))); 
+    StructCodes{i} = FullStructCodes(ismember(FullStructNames,InputStructNames(i)));
 end;
 
 end
@@ -375,184 +389,116 @@ StructNames = {'Right Accumbens Area'
     'Left Ventral DC'
     'Left Basal Forebrain'
     'Right Basal Forebrain'
-    'Right AcgG'
-    'Left ACgG'
-    'Right AIns'
-    'Left Ains'
-    'Right AorG'
-    'Left AorG'
-    'Right AnG'
-    'Left AnG'
-    'Right Calc'
-    'Left Calc'
-    'Right CO'
-    'Left CO'
-    'Right Cun'
-    'Left Cun'
-    'Right Ent'
-    'Left Ent'
-    'Right FO'
-    'Left FO'
-    'Right FRP'
-    'Left FRP'
-    'Right FuG'
-    'Left FuG'
-    'Right Gre'
-    'Left Gre'
-    'Right IOG'
-    'Left IOG'
-    'Right ITG'
-    'Left ITG'
-    'Right LiG'
-    'Left LiG'
-    'Right LorG'
-    'Left LorG'
-    'Right McgG'
-    'Left McgG'
-    'Right MFC'
-    'Left MFC'
-    'Right MFG'
-    'Left MFG'
-    'Right MOG'
-    'Left MOG'
-    'Right MorG'
-    'Left MorG'
-    'Right MpoG'
-    'Left MpoG'
-    'Right MprG'
-    'Left MprG'
-    'Right MSFG'
-    'Left MSFG'
-    'Right MTG'
-    'Left MTG'
-    'Right OCP'
-    'Left OCP'
-    'Right OfuG'
-    'Left OfuG'
-    'Right OpIFG'
-    'Left OpIFG'
-    'Right OrIFG'
-    'Left OrIFG'
-    'Right PcgG'
-    'Left PcgG'
-    'Right Pcu'
-    'Left Pcu'
-    'Right PHG'
-    'Left PHG'
-    'Right Pins'
-    'Left Pins'
-    'Right PO'
-    'Left PO'
-    'Right PoG'
-    'Left PoG'
-    'Right PorG'
-    'Left PorG'
-    'Right PP'
-    'Left PP'
-    'Right PrG'
-    'Left PrG'
-    'Right PT'
-    'Left PT'
-    'Right SCA'
-    'Left SCA'
-    'Right SFG'
-    'Left SFG'
-    'Right SMC'
-    'Left SMC'
-    'Right SMG'
-    'Left SMG'
-    'Right SOG'
-    'Left SOG'
-    'Right SPL'
-    'Left SPL'
-    'Right STG'
-    'Left STG'
-    'Right TMP'
-    'Left TMP'
-    'Right TrIFG'
-    'Left TrIFG'
-    'Right TTG'
-    'Left TTG'};
+    'Right ACgG anterior cingulate gyrus'
+    'Left ACgG anterior cingulate gyrus'
+    'Right AIns anterior insula'
+    'Left AIns anterior insula'
+    'Right AOrG anterior orbital gyrus'
+    'Left AOrG anterior orbital gyrus'
+    'Right AnG angular gyrus'
+    'Left AnG angular gyrus'
+    'Right Calc calcarine cortex'
+    'Left Calc calcarine cortex'
+    'Right CO central operculum'
+    'Left CO central operculum'
+    'Right Cun cuneus'
+    'Left Cun cuneus'
+    'Right Ent entorhinal area'
+    'Left Ent entorhinal area'
+    'Right FO frontal operculum'
+    'Left FO frontal operculum'
+    'Right FRP frontal pole'
+    'Left FRP frontal pole'
+    'Right FuG fusiform gyrus'
+    'Left FuG fusiform gyrus'
+    'Right GRe gyrus rectus'
+    'Left GRe gyrus rectus'
+    'Right IOG inferior occipital gyrus'
+    'Left IOG inferior occipital gyrus'
+    'Right ITG inferior temporal gyrus'
+    'Left ITG inferior temporal gyrus'
+    'Right LiG lingual gyrus'
+    'Left LiG lingual gyrus'
+    'Right LOrG lateral orbital gyrus'
+    'Left LOrG lateral orbital gyrus'
+    'Right MCgG middle cingulate gyrus'
+    'Left MCgG middle cingulate gyrus'
+    'Right MFC medial frontal cortex'
+    'Left MFC medial frontal cortex'
+    'Right MFG middle frontal gyrus'
+    'Left MFG middle frontal gyrus'
+    'Right MOG middle occipital gyrus'
+    'Left MOG middle occipital gyrus'
+    'Right MOrG medial orbital gyrus'
+    'Left MOrG medial orbital gyrus'
+    'Right MPoG postcentral gyrus medial segment'
+    'Left MPoG postcentral gyrus medial segment'
+    'Right MPrG precentral gyrus medial segment'
+    'Left MPrG precentral gyrus medial segment'
+    'Right MSFG superior frontal gyrus medial segment'
+    'Left MSFG superior frontal gyrus medial segment'
+    'Right MTG middle temporal gyrus'
+    'Left MTG middle temporal gyrus'
+    'Right OCP occipital pole'
+    'Left OCP occipital pole'
+    'Right OFuG occipital fusiform gyrus'
+    'Left OFuG occipital fusiform gyrus'
+    'Right OpIFG opercular part of the inferior frontal gyrus'
+    'Left OpIFG opercular part of the inferior frontal gyrus'
+    'Right OrIFG orbital part of the inferior frontal gyrus'
+    'Left OrIFG orbital part of the inferior frontal gyrus'
+    'Right PCgG posterior cingulate gyrus'
+    'Left PCgG posterior cingulate gyrus'
+    'Right PCu precuneus'
+    'Left PCu precuneus'
+    'Right PHG parahippocampal gyrus'
+    'Left PHG parahippocampal gyrus'
+    'Right PIns posterior insula'
+    'Left PIns posterior insula'
+    'Right PO parietal operculum'
+    'Left PO parietal operculum'
+    'Right PoG postcentral gyrus'
+    'Left PoG postcentral gyrus'
+    'Right POrG posterior orbital gyrus'
+    'Left POrG posterior orbital gyrus'
+    'Right PP planum polare'
+    'Left PP planum polare'
+    'Right PrG precentral gyrus'
+    'Left PrG precentral gyrus'
+    'Right PT planum temporale'
+    'Left PT planum temporale'
+    'Right SCA subcallosal area'
+    'Left SCA subcallosal area'
+    'Right SFG superior frontal gyrus'
+    'Left SFG superior frontal gyrus'
+    'Right SMC supplementary motor cortex'
+    'Left SMC supplementary motor cortex'
+    'Right SMG supramarginal gyrus'
+    'Left SMG supramarginal gyrus'
+    'Right SOG superior occipital gyrus'
+    'Left SOG superior occipital gyrus'
+    'Right SPL superior parietal lobule'
+    'Left SPL superior parietal lobule'
+    'Right STG superior temporal gyrus'
+    'Left STG superior temporal gyrus'
+    'Right TMP temporal pole'
+    'Left TMP temporal pole'
+    'Right TrIFG triangular part of the inferior frontal gyrus'
+    'Left TrIFG triangular part of the inferior frontal gyrus'
+    'Right TTG transverse temporal gyrus'
+    'Left TTG transverse temporal gyrus'};
 end
 
-
-%% function filesf = pickfiles(directory0,filtand,filtor)
-function filesf = pickfiles(directory0,filtand,filtor)
-
-filesf = '';
-if iscell(directory0), directory0 = strvcat(directory0{:}); end
-for d = 1:size(directory0,1),
-    directory = deblank(directory0(d,:));
-    if iscell(filtand), filtand = strvcat(filtand{:}); end
-    if nargin == 3 && iscell(filtor),
-        filtor = strvcat(filtor{:}); end
-    files = get_all(directory); ind = [];
-    for file = 1:size(files,1),
-        for i = 1:size(filtand,1)
-            chkand(i) = ~isempty(findstr(deblank(files(file,:)),...
-                [deblank(filtand(i,:))]));
-        end
-        if nargin == 3,
-            for i = 1:size(filtor,1)
-                chkor(i) = ~isempty(findstr(deblank(files(file,:)),...
-                    [deblank(filtor(i,:))]));
-            end
-        else, chkor = true;
-        end
-        if all([all(chkand) any(chkor)]), ind = [ind file]; end
-    end
-    filesf = strvcat(filesf,files(ind,:));
-end
-end
-
-%% function files = get_all(directory)
-function files = get_all(directory)
-
-% Pick all files in a folder
-% Pedro A Valdes-Hernandez 
-
-directory = deblank(directory);
-list = dirall(directory);
-for i = 1:length(list),
-    if ~list(i).isdir, 
-        files{i} = list(i).name;
-    end
-end
-if ~isempty(list)
-    files = strvcat(files{:});
-else files = []; end
-end
-
-%% function list = dirall(folder,level)
-function list = dirall(folder,level)
-
-list = dir(folder); list([1 2]) = [];
-for i = 1:length(list), 
-    list(i).name = sprintf('%s%s%s',folder,filesep,list(i).name);
-end
-if nargin == 2 && level == 1, return; end
-for i = 1:length(list),
-    if list(i).isdir,
-        switch nargin
-            case 1
-                newlist = dirall(list(i).name);
-            case 2
-                newlist = dirall(list(i).name,level-1);
-        end
-        list = [list; newlist];
-    end
-end
-end
 
 %% function cell2csv(fileName, cellArray, separator, excelYear, decimal)
 function cell2csv(fileName, cellArray, separator, excelYear, decimal)
 % % Writes cell array content into a *.csv file.
-% % 
+% %
 % % CELL2CSV(fileName, cellArray[, separator, excelYear, decimal])
 % %
 % % fileName     = Name of the file to save. [ e.g. 'text.csv' ]
 % % cellArray    = Name of the Cell Array where the data is in
-% % 
+% %
 % % optional:
 % % separator    = sign separating the values (default = ',')
 % % excelYear    = depending on the Excel version, the cells are put into
@@ -565,7 +511,7 @@ function cell2csv(fileName, cellArray, separator, excelYear, decimal)
 % % fixed the logical-bug, Kaiserslautern, 06/2008, S.Fiedler
 % % added the choice of decimal separator, 11/2010, S.Fiedler
 % % modfiedy and optimized by Jerry Zhu, June, 2014, jerryzhujian9@gmail.com
-% % now works with empty cells, numeric, char, string, row vector, and logical cells. 
+% % now works with empty cells, numeric, char, string, row vector, and logical cells.
 % % row vector such as [1 2 3] will be separated by two spaces, that is "1  2  3"
 % % One array can contain all of them, but only one value per cell.
 % % 2x times faster than Sylvain's codes (8.8s vs. 17.2s):
@@ -597,7 +543,7 @@ datei = fopen(fileName, 'w');
 [nrows,ncols] = size(cellArray);
 for row = 1:nrows
     fprintf(datei,[sprintf(['%s' separator],cellArray{row,1:ncols-1}) cellArray{row,ncols} '\n']);
-end    
+end
 % Closing file
 fclose(datei);
 
