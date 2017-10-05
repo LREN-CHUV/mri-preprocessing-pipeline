@@ -1,8 +1,13 @@
 description: "Pre-processing pipelines for MRI neuroimaging"
 
 long_description: |
-  TODO
+  Pre-processing pipelines for MRI neuroimaging.
 
+  Those pipelines work on Matlab and [SPM 12](http://www.fil.ion.ucl.ac.uk/spm).
+
+  They are used daily by [LREN](https://www.unil.ch/lren/en/home.html) to extract features from subjects enrolled in neuroscience research studies.
+
+  In addition, those pipelines are deployed to hospitals participating in the [Medical Informatics platform](https://mip.humanbrainproject.eu) of the [Human Brain Project](https://humanbrainproject.eu) to process clinical MRI scans.
 
 authors:
   - author: John Ashburner,
@@ -46,7 +51,6 @@ testing:
 release_management:
   current_version: 1.3.0
   current_code_release: https://github.com/HBPMedical/mri-preprocessing-pipeline/archive/1.3.0.zip
-  current_binary_release: https://pypi.python.org/pypi/mri-preprocessing-pipeline/1.3.0
   release_script: 'publish.sh'
 
 continuous_integration: []

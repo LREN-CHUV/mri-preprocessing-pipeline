@@ -9,7 +9,7 @@ Those pipelines work on Matlab and [SPM 12](http://www.fil.ion.ucl.ac.uk/spm).
 
 They are used daily by [LREN](https://www.unil.ch/lren/en/home.html) to extract features from subjects enrolled in neuroscience research studies.
 
-In addition, those pipelines will be deployed to hospitals participating in the [Medical Informatics platform](https://mip.humanbrainproject.eu) of the [Human Brain Project](https://humanbrainproject.eu) to process clinical MRI scans.
+In addition, those pipelines are deployed to hospitals participating in the [Medical Informatics platform](https://mip.humanbrainproject.eu) of the [Human Brain Project](https://humanbrainproject.eu) to process clinical MRI scans.
 
 ## Release process
 
