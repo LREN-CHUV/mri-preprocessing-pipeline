@@ -3,6 +3,8 @@
 set -e
 
 count=$(git status --porcelain | wc -l)
+
+# shellcheck disable=SC2086
 if test $count -gt 0; then
   git status
   echo "Not all files have been committed in Git. Release aborted"
@@ -26,7 +28,7 @@ select_part() {
           ;;
       *)
           read -p "Version > " version
-          bumpversion --new_version=$version $part
+          bumpversion --new-version="$version" all
           ;;
   esac
 }
