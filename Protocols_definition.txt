@@ -352,6 +352,7 @@ Cor T1 SE +C
 Sag T1 SE memp
 Sag T1 SE +c
 SmartBrain
+Sag 3D T1 FSPGR
 __fMRI__
 [EPI]
 al_mepi2d_3mm
