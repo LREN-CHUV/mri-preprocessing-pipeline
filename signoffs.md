@@ -22,4 +22,4 @@
 * 17/07/2017 v1.2.16 - Ludovic Claude
 * 28/08/2017 v1.2.17 - Ludovic Claude
 * 05/10/2017 v1.3.0 - Ludovic Claude
-
+* 26/02/2018 v1.3.1 - Mirco Nasuti
