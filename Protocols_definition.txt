@@ -353,6 +353,7 @@ Sag T1 SE memp
 Sag T1 SE +c
 SmartBrain
 Sag 3D T1 FSPGR
+VT1W_3D SAG SENSE
 __fMRI__
 [EPI]
 al_mepi2d_3mm
