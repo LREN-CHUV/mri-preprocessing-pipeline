@@ -25,3 +25,4 @@
 * 26/02/2018 v1.3.1 - Mirco Nasuti
 * 07/03/2018 v1.3.2 - Mirco Nasuti
 * 08/03/2018 v1.3.3 - Mirco Nasuti
+* 16/03/2018 v1.3.4 - Mirco Nasuti
