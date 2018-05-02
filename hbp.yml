@@ -49,8 +49,8 @@ testing:
   unit_testing: []
 
 release_management:
-  current_version: 1.3.0
-  current_code_release: https://github.com/HBPMedical/mri-preprocessing-pipeline/archive/1.3.0.zip
+  current_version: 1.3.4
+  current_code_release: https://github.com/HBPMedical/mri-preprocessing-pipeline/archive/1.3.4.zip
   release_script: 'publish.sh'
 
 continuous_integration: []
